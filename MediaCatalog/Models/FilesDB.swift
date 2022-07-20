@@ -8,26 +8,36 @@
 import Foundation
 import AppKit
 
-class FilesDB {
+final class FilesDB {
     
-    // MARK: -Properties
+    // MARK: - Properties
     
-    private var files: [File] = []
+    static var shared = FilesDB() // Singleton.
+    
+    public var selectedPath: URL? {
+        didSet {
+            guard let safePath = selectedPath else { return }
+            
+            // Clear files array.
+            files = []
+            
+            RAWPhotos = 0
+            JPEGPhotos = 0
+            
+            let selectedFilesURLs: [URL] = contentsOf(folder: safePath)
+            
+            populateDB(filesURLs: selectedFilesURLs)
+        }
+    }
+    
+    public var files: [File] = []
     
     private var RAWPhotos: Int = 0
     private var JPEGPhotos: Int = 0
     
     // MARK: - Methods
     
-    init(filesURLs: [URL]) {
-        // Clear files array.
-        files = []
-        
-        RAWPhotos = 0
-        JPEGPhotos = 0
-        
-        populateDB(filesURLs: filesURLs)
-    }
+    init() {}
     
     public func getFile(at: Int) -> File? {
         if files.count > at {
@@ -127,6 +137,22 @@ class FilesDB {
             }
             
             NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+        }
+    }
+    
+    ///
+    /// Gets the content (files) inside the selected folder.
+    ///
+    private func contentsOf(folder: URL) -> [URL] {
+        let fileManager = FileManager.default
+        do {
+            let contents = try fileManager.contentsOfDirectory(atPath: folder.path)
+            
+            let urls = contents.map { return folder.appendingPathComponent($0) }
+            print("Files inside the selected folder. \(urls)")
+            return urls
+        } catch {
+            return []
         }
     }
     

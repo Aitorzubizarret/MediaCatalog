@@ -26,24 +26,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // MARK: - Properties
     
-    private var db: FilesDB? {
-        didSet {
-            collectionView.reloadData()
-        }
-    }
-    private var selectedFolder: URL? {
-        didSet {
-            guard let safeSelectedFolder = selectedFolder else { return }
-            
-            selectedFilesURLs = contentsOf(folder: safeSelectedFolder)
-        }
-    }
-    private var selectedFilesURLs: [URL] = [] {
-        didSet {
-            createFilesDB()
-        }
-    }
-    
     // MARK: - Methods
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -98,33 +80,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         fileManagerPanel.beginSheetModal(for: window) { result in
             if result == NSApplication.ModalResponse.OK {
-                self.selectedFolder = fileManagerPanel.urls[0]
+                FilesDB.shared.selectedPath = fileManagerPanel.urls[0]
             }
         }
-    }
-    
-    ///
-    /// Gets the content (files) inside the selected folder.
-    ///
-    private func contentsOf(folder: URL) -> [URL] {
-        let fileManager = FileManager.default
-        do {
-            let contents = try fileManager.contentsOfDirectory(atPath: folder.path)
-            
-            let urls = contents.map { return folder.appendingPathComponent($0) }
-            print("Files inside the selected folder. \(urls)")
-            return urls
-        } catch {
-            return []
-        }
-    }
-    
-    ///
-    ///
-    ///
-    private func createFilesDB() {
-        // Create the DB with the selected files.
-        db = FilesDB(filesURLs: selectedFilesURLs)
     }
     
     ///
@@ -133,11 +91,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func reloadUI() {
         DispatchQueue.main.async {
             self.collectionView.reloadData()
-            if let safeDB = self.db {
-                let finalText: String = "\(safeDB.count(extensionType: .RAWPhoto)) RAW, \(safeDB.count(extensionType: .JPEGPhoto)) JPEG"
-                self.fileTypeCounterLabel.stringValue = finalText
-                
-            }
+            
+            let finalText: String = "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW, \(FilesDB.shared.count(extensionType: .JPEGPhoto)) JPEG)"
+            
+            self.fileTypeCounterLabel.stringValue = finalText
         }
     }
     
@@ -156,19 +113,12 @@ extension AppDelegate: NSCollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let safeDB = db {
-            return safeDB.count(extensionType: .all)
-        } else {
-            return 0
-        }
+        return FilesDB.shared.files.count
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "PhotoItems"), for: indexPath) as! FileCollectionViewItem
-        if let safeDB = db {
-            item.file = safeDB.getFile(at: indexPath.item)
-        }
-        
+        item.file = FilesDB.shared.getFile(at: indexPath.item)
         return item
     }
 }
