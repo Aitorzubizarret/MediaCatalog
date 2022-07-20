@@ -14,7 +14,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @IBOutlet var window: NSWindow!
     
+    @IBOutlet weak var allMediaButton: NSButton!
+    @IBAction func allMediaButtonTapped(_ sender: Any) {
+        selectedFileImageView.isHidden = true
+        collectionView.isHidden = false
+    }
+    
+    @IBOutlet weak var selectedButton: NSButton!
+    @IBAction func selectedButtonTapped(_ sender: Any) {
+    }
+    
     @IBOutlet weak var collectionView: NSCollectionView!
+    @IBOutlet weak var selectedFileImageView: NSImageView!
+    
     
     @IBOutlet weak var importFolderButton: NSButton!
     @IBAction func importFolderButtonPressed(_ sender: Any) {
@@ -49,6 +61,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Labels.
         fileTypeCounterLabel.stringValue = ""
+        
+        // Buttons.
+        selectedButton.isHidden = true
+        
+        // ImageViews.
+        selectedFileImageView.isHidden = false
     }
     
     ///
@@ -57,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        collectionView.isSelectable = true
+        collectionView.allowsEmptySelection = true
+        collectionView.allowsMultipleSelection = false
         
         // Register the Cells / Items for the CollectionView.
         let photoCellNib = NSNib(nibNamed: "FileCollectionViewItem", bundle: nil)
@@ -102,7 +124,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 // MARK: - NSCollectionView Delegate
 
-extension AppDelegate: NSCollectionViewDelegate {}
+extension AppDelegate: NSCollectionViewDelegate {
+    
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        
+        guard let safeIndexPath = indexPaths.first else { return }
+        
+        displaySelectedPhoto(file: FilesDB.shared.getFile(at: safeIndexPath.item))
+        
+        collectionView.deselectAll(self)
+    }
+    
+}
 
 // MARK: - NSCollectionView Data Source
 
@@ -121,4 +154,21 @@ extension AppDelegate: NSCollectionViewDataSource {
         item.file = FilesDB.shared.getFile(at: indexPath.item)
         return item
     }
+}
+
+// MARK: - ImageView
+
+extension AppDelegate {
+    
+    private func displaySelectedPhoto(file: File?) {
+        guard let safeFile = file else { return }
+        
+        collectionView.isHidden = true
+        
+        selectedButton.isHidden = false
+        selectedFileImageView.isHidden = false
+        
+        selectedFileImageView.image = safeFile.getThumbnailImage()
+    }
+    
 }
