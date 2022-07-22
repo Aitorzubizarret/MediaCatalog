@@ -14,6 +14,7 @@ struct File {
     
     private let name: String
     private let thumbnailImage: NSImage
+    private let originalPath: URL
     
     public enum ExtensionType {
         case RAWPhoto
@@ -23,9 +24,10 @@ struct File {
     
     // MARK: - Methods
     
-    init(name: String, thumbnailImage: NSImage) {
+    init(name: String, thumbnailImage: NSImage, originalPath: URL) {
         self.name = name
         self.thumbnailImage = thumbnailImage
+        self.originalPath = originalPath
     }
     
     public func getName() -> String {

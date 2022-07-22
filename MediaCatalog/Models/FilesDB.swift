@@ -130,7 +130,7 @@ final class FilesDB {
                 }
                 
                 // Create the File element.
-                let file = File(name: fileName, thumbnailImage: fileThumbnailImage)
+                let file = File(name: fileName, thumbnailImage: fileThumbnailImage, originalPath: fileURL)
                 
                 // Append the new File to the files array of the PhotosDB.
                 self.files.append(file)
