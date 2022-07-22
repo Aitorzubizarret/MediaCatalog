@@ -148,8 +148,17 @@ final class FilesDB {
         do {
             let contents = try fileManager.contentsOfDirectory(atPath: folder.path)
             
-            let urls = contents.map { return folder.appendingPathComponent($0) }
+            var urls: [URL] = []
+            urls = contents.map { return folder.appendingPathComponent($0) }
             print("Files inside the selected folder. \(urls)")
+            
+            ///
+            /// Filter urls and avoid :
+            /// - Folders
+            /// - .DS_Store file.
+            ///
+            urls = urls.filter { $0.lastPathComponent != ".DS_Store" && !$0.hasDirectoryPath }
+            
             return urls
         } catch {
             return []
