@@ -29,6 +29,7 @@ final class FilesDB {
             populateDB(filesURLs: selectedFilesURLs)
         }
     }
+    public var getFilesInsideFolders: Bool = true
     
     public var files: [File] = []
     
@@ -145,24 +146,43 @@ final class FilesDB {
     ///
     private func contentsOf(folder: URL) -> [URL] {
         let fileManager = FileManager.default
-        do {
-            let contents = try fileManager.contentsOfDirectory(atPath: folder.path)
-            
-            var urls: [URL] = []
-            urls = contents.map { return folder.appendingPathComponent($0) }
-            print("Files inside the selected folder. \(urls)")
-            
-            ///
-            /// Filter urls and avoid :
-            /// - Folders
-            /// - .DS_Store file.
-            ///
-            urls = urls.filter { $0.lastPathComponent != ".DS_Store" && !$0.hasDirectoryPath }
-            
-            return urls
-        } catch {
-            return []
+        
+        var urls: [URL] = []
+        
+        if getFilesInsideFolders {
+            if let enumerator = fileManager.enumerator(at: folder,
+                                                       includingPropertiesForKeys: [.isRegularFileKey],
+                                                       options: [.skipsHiddenFiles, .skipsPackageDescendants]) {
+                for case let fileurl as URL in enumerator {
+                    do {
+                        let fileAttributes = try fileurl.resourceValues(forKeys: [.isRegularFileKey])
+                        if fileAttributes.isRegularFile! {
+                            urls.append(fileurl)
+                        }
+                    } catch {
+                        print("Error \(error)")
+                    }
+                }
+            }
+        } else {
+            do {
+                let contents = try fileManager.contentsOfDirectory(atPath: folder.path)
+                
+                urls = contents.map { return folder.appendingPathComponent($0) }
+                print("Files inside the selected folder. \(urls)")
+
+                ///
+                /// Filter urls and avoid :
+                /// - Folders
+                /// - .DS_Store file.
+                ///
+                urls = urls.filter { $0.lastPathComponent != ".DS_Store" && !$0.hasDirectoryPath }
+            } catch {
+                print("Error \(error)")
+            }
         }
+        
+        return urls
     }
     
 }
