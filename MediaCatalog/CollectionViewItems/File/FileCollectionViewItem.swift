@@ -20,8 +20,18 @@ class FileCollectionViewItem: NSCollectionViewItem {
         didSet {
             guard let safeFile = file else { return }
             
+            // File name.
             nameLabel.stringValue = safeFile.getName()
-            thumbnailImageView.image = safeFile.getThumbnailImage()
+            
+            // File thumbnail.
+            switch safeFile.getOriginalPath().pathExtension {
+            case "jpg", "JPG", "jpeg", "JPEG":
+                thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
+            case "arw", "ARW":
+                thumbnailImageView.image = safeFile.getThumbnailImage()
+            default:
+                print("No thumbnail")
+            }
         }
     }
     

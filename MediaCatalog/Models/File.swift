@@ -39,4 +39,8 @@ struct File {
         return thumbnailImage
     }
     
+    public func getOriginalPath() -> URL {
+        return originalPath
+    }
+    
 }
