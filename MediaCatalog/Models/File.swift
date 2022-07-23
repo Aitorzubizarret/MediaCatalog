@@ -19,6 +19,7 @@ struct File {
     public enum ExtensionType {
         case RAWPhoto
         case JPEGPhoto
+        case PNGPhoto
         case all
     }
     

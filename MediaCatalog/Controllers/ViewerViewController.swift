@@ -120,7 +120,10 @@ class ViewerViewController: NSViewController {
         DispatchQueue.main.async {
             self.collectionView.reloadData()
             
-            let finalText: String = "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW, \(FilesDB.shared.count(extensionType: .JPEGPhoto)) JPEG)"
+            var finalText: String = ""
+            finalText += "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW, "
+            finalText += "\(FilesDB.shared.count(extensionType: .JPEGPhoto)) JPG, "
+            finalText += "\(FilesDB.shared.count(extensionType: .PNGPhoto)) PNG"
             
             self.importedFilesTypesLabel.stringValue = finalText
         }

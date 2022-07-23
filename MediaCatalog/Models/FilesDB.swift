@@ -23,6 +23,7 @@ final class FilesDB {
             
             RAWPhotos = 0
             JPEGPhotos = 0
+            PNGPhotos = 0
             
             let selectedFilesURLs: [URL] = contentsOf(folder: safePath)
             
@@ -35,6 +36,7 @@ final class FilesDB {
     
     private var RAWPhotos: Int = 0
     private var JPEGPhotos: Int = 0
+    private var PNGPhotos: Int = 0
     
     // MARK: - Methods
     
@@ -58,6 +60,8 @@ final class FilesDB {
             return RAWPhotos
         case .JPEGPhoto:
             return JPEGPhotos
+        case .PNGPhoto:
+            return PNGPhotos
         case .all:
             return files.count
         }
@@ -84,9 +88,12 @@ final class FilesDB {
                 case "ARW":
                     self.RAWPhotos += 1
                     fileThumbnailImage = self.createThumbnail(fileURL: fileURL)
-                case "jpg":
+                case "jpg", "JPG", "jpeg", "JPEG":
                     self.JPEGPhotos += 1
                     // Maybe later we are going to create thumbnails for the big JPG photos.
+                case "png", "PNG":
+                    self.PNGPhotos += 1
+                    // Maybe later we are going to create thumbnails for the big PNG photos.
                 default:
                     print("Rest of the files")
                 }
