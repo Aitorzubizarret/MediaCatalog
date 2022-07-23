@@ -79,55 +79,16 @@ final class FilesDB {
                 // File thumbnail image.
                 var fileThumbnailImage: NSImage = NSImage()
                 
-                // Open the RAW file.
-                if let rawImageFilter = CIRAWFilter(imageURL: fileURL),
-                   let rawImage = rawImageFilter.outputImage {
-                    
-                    let rep = NSCIImageRep(ciImage: rawImage)
-                    let nsImage = NSImage(size: rep.size)
-                    nsImage.addRepresentation(rep)
-                    
-                    // Check image size to avoid trying to scale a file that is not an image.
-                    if rep.size.width != 0 && rep.size.height != 0 {
-                        
-                        // Check file extension.
-                        switch fileURL.pathExtension {
-                        case "ARW":
-                            self.RAWPhotos += 1
-                        case "jpg":
-                            self.JPEGPhotos += 1
-                        default:
-                            print("Rest of the files")
-                        }
-                        
-                        
-                        // Resize the image.
-                        let thumbnailSize = NSSize(width: 800, height: 600)
-                        var newSize: NSSize = NSSize(width: 0, height: 0)
-                        
-                        let widthRatio = thumbnailSize.width / rep.size.width
-                        let heightRatio = thumbnailSize.height / rep.size.height
-                        
-                        if widthRatio > heightRatio {
-                            newSize = NSSize(width: floor(rep.size.width * widthRatio), height: floor(rep.size.height * widthRatio))
-                        } else {
-                            newSize = NSSize(width: floor(rep.size.width * heightRatio), height: floor(rep.size.height * heightRatio))
-                        }
-                        
-                        let thumbnailFrame = NSMakeRect(0, 0, newSize.width, newSize.height)
-                        
-                        if let resizedImageRep = nsImage.bestRepresentation(for: thumbnailFrame, context: nil, hints: nil) {
-                            let img = NSImage(size: newSize)
-                            
-                            // Set the drawing context and make sure to remove the focus before returning.
-                            img.lockFocus()
-                            defer { img.unlockFocus() }
-                            
-                            if resizedImageRep.draw(in: thumbnailFrame) {
-                                fileThumbnailImage = img
-                            }
-                        }
-                    }
+                // Check file extension.
+                switch fileURL.pathExtension {
+                case "ARW":
+                    self.RAWPhotos += 1
+                    fileThumbnailImage = self.createThumbnail(fileURL: fileURL)
+                case "jpg":
+                    self.JPEGPhotos += 1
+                    // Maybe later we are going to create thumbnails for the big JPG photos.
+                default:
+                    print("Rest of the files")
                 }
                 
                 // Create the File element.
@@ -183,6 +144,56 @@ final class FilesDB {
         }
         
         return urls
+    }
+    
+    ///
+    /// Creates a thumbnail image of the received file.
+    ///
+    private func createThumbnail(fileURL: URL) -> NSImage {
+        // File thumbnail image.
+        var newThumbnailImage: NSImage = NSImage()
+        
+        // Open the RAW file.
+        if let rawImageFilter = CIRAWFilter(imageURL: fileURL),
+           let rawImage = rawImageFilter.outputImage {
+            
+            let rep = NSCIImageRep(ciImage: rawImage)
+            let nsImage = NSImage(size: rep.size)
+            nsImage.addRepresentation(rep)
+            
+            // Check image size to avoid trying to scale a file that is not an image.
+            if rep.size.width != 0 && rep.size.height != 0 {
+                
+                // Resize the image.
+                let thumbnailSize = NSSize(width: 800, height: 600)
+                var newSize: NSSize = NSSize(width: 0, height: 0)
+                
+                let widthRatio = thumbnailSize.width / rep.size.width
+                let heightRatio = thumbnailSize.height / rep.size.height
+                
+                if widthRatio > heightRatio {
+                    newSize = NSSize(width: floor(rep.size.width * widthRatio), height: floor(rep.size.height * widthRatio))
+                } else {
+                    newSize = NSSize(width: floor(rep.size.width * heightRatio), height: floor(rep.size.height * heightRatio))
+                }
+                
+                let thumbnailFrame = NSMakeRect(0, 0, newSize.width, newSize.height)
+                
+                if let resizedImageRep = nsImage.bestRepresentation(for: thumbnailFrame, context: nil, hints: nil) {
+                    let img = NSImage(size: newSize)
+                    
+                    // Set the drawing context and make sure to remove the focus before returning.
+                    img.lockFocus()
+                    defer { img.unlockFocus() }
+                    
+                    if resizedImageRep.draw(in: thumbnailFrame) {
+                        newThumbnailImage = img
+                    }
+                }
+            }
+        }
+        
+        return newThumbnailImage
     }
     
 }
