@@ -25,10 +25,12 @@ class FileCollectionViewItem: NSCollectionViewItem {
             
             // File thumbnail.
             switch safeFile.getOriginalPath().pathExtension {
-            case "jpg", "JPG", "jpeg", "JPEG":
-                thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
             case "arw", "ARW":
                 thumbnailImageView.image = safeFile.getThumbnailImage()
+            case "jpg", "JPG", "jpeg", "JPEG":
+                thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
+            case "png", "PNG":
+                thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
             default:
                 print("No thumbnail")
             }
