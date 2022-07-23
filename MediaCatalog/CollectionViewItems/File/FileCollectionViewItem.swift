@@ -32,7 +32,7 @@ class FileCollectionViewItem: NSCollectionViewItem {
             case "png", "PNG":
                 thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
             default:
-                print("No thumbnail")
+                thumbnailImageView.image = NSImage(named: "unknownFileExtension")
             }
         }
     }
