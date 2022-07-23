@@ -172,7 +172,17 @@ extension ViewerViewController {
         
         photoOnDisplay = true
         
-        imageView.image = safeFile.getThumbnailImage()
+        // File thumbnail.
+        switch safeFile.getOriginalPath().pathExtension {
+        case "arw", "ARW":
+            imageView.image = safeFile.getThumbnailImage()
+        case "jpg", "JPG", "jpeg", "JPEG":
+            imageView.loadFrom(localPath: safeFile.getOriginalPath())
+        case "png", "PNG":
+            imageView.loadFrom(localPath: safeFile.getOriginalPath())
+        default:
+            imageView.image = NSImage(named: "unknownFileExtension")
+        }
     }
     
 }
