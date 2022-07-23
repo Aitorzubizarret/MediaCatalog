@@ -11,10 +11,6 @@ class ViewerViewController: NSViewController {
     
     // MARK: - UI Elements
     
-    @IBOutlet weak var splitView: NSSplitView!
-    @IBOutlet weak var leftSplitViewView: NSView!
-    @IBOutlet weak var rightSplitViewView: NSView!
-    
     @IBOutlet weak var importFolderButton: NSButtonCell!
     @IBAction func importFolderButtonTapped(_ sender: Any) {
         loadImages()
@@ -27,7 +23,9 @@ class ViewerViewController: NSViewController {
     
     @IBOutlet weak var importedFilesTypesLabel: NSTextField!
     
+    @IBOutlet weak var collectionViewScrollView: NSScrollView!
     @IBOutlet weak var collectionView: NSCollectionView!
+    
     @IBOutlet weak var imageView: NSImageView!
     
     // MARK: - Properties
@@ -37,10 +35,13 @@ class ViewerViewController: NSViewController {
             if photoOnDisplay {
                 closePhotoButton.isHidden = false
                 imageView.isHidden = false
+                collectionViewScrollView.isHidden = true
                 collectionView.isHidden = true
             } else {
                 closePhotoButton.isHidden = true
                 imageView.isHidden = true
+                imageView.image = NSImage()
+                collectionViewScrollView.isHidden = false
                 collectionView.isHidden = false
             }
         }
@@ -64,6 +65,7 @@ class ViewerViewController: NSViewController {
         // Labels.
         importedFilesTypesLabel.stringValue = ""
         
+        // NSImageView.
         photoOnDisplay = false
     }
     
