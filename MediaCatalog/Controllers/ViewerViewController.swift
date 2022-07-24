@@ -106,6 +106,7 @@ class ViewerViewController: NSViewController {
         fileManagerPanel.allowsMultipleSelection = false
         
         fileManagerPanel.beginSheetModal(for: window) { result in
+            self.photoOnDisplay = false
             self.importedFilesTypesLabel.stringValue = "importing..."
             
             if result == NSApplication.ModalResponse.OK {
