@@ -30,7 +30,7 @@ class ViewerViewController: NSViewController {
     
     // MARK: - Properties
     
-    var photoOnDisplay: Bool = false {
+    private var photoOnDisplay: Bool = false {
         didSet {
             if photoOnDisplay {
                 closePhotoButton.isHidden = false
@@ -98,9 +98,6 @@ class ViewerViewController: NSViewController {
     ///
     private func loadImages() {
         guard let window = self.view.window else { return }
-        
-        // Clear label.
-        importedFilesTypesLabel.stringValue = "importing..."
 
         // File Manager.
         let fileManagerPanel = NSOpenPanel()
@@ -109,6 +106,8 @@ class ViewerViewController: NSViewController {
         fileManagerPanel.allowsMultipleSelection = false
         
         fileManagerPanel.beginSheetModal(for: window) { result in
+            self.importedFilesTypesLabel.stringValue = "importing..."
+            
             if result == NSApplication.ModalResponse.OK {
                 FilesDB.shared.selectedPath = fileManagerPanel.urls[0]
             }
