@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="ViewerViewController" customModule="MediaCatalog" customModuleProvider="target">
             <connections>
                 <outlet property="closeSelectedPhotoViewerButton" destination="pbo-Bm-nkN" id="Ddx-tM-bsk"/>
+                <outlet property="contentView" destination="lWs-3q-lUN" id="I44-gA-LjG"/>
                 <outlet property="detectFacesButton" destination="QeN-e6-Dkl" id="jPS-P4-pC6"/>
                 <outlet property="galleryCollectionView" destination="tLJ-h7-9xM" id="PuF-Kc-gmC"/>
                 <outlet property="galleryCollectionViewScrollView" destination="Cb3-on-p7N" id="cyw-gk-9Sk"/>
@@ -28,10 +29,10 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="QkP-80-bxS">
-                    <rect key="frame" x="0.0" y="0.0" width="180" height="602"/>
+                    <rect key="frame" x="0.0" y="0.0" width="220" height="602"/>
                     <subviews>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mob-LP-Vui">
-                            <rect key="frame" x="-2" y="542" width="184" height="20"/>
+                            <rect key="frame" x="-2" y="542" width="224" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="20" id="sGj-OL-L3A"/>
                             </constraints>
@@ -42,7 +43,7 @@
                             </textFieldCell>
                         </textField>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PgU-0F-UGm">
-                            <rect key="frame" x="23" y="495" width="134" height="32"/>
+                            <rect key="frame" x="43" y="495" width="134" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="DlG-kQ-qIf"/>
                             </constraints>
@@ -55,7 +56,7 @@
                             </buttonCell>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QeN-e6-Dkl">
-                            <rect key="frame" x="23" y="455" width="134" height="32"/>
+                            <rect key="frame" x="43" y="455" width="134" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="VR5-Ag-epj"/>
                             </constraints>
@@ -68,7 +69,7 @@
                             </connections>
                         </button>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ufh-on-Stn">
-                            <rect key="frame" x="28" y="20" width="124" height="20"/>
+                            <rect key="frame" x="48" y="20" width="124" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="BED-8T-GDS"/>
                                 <constraint firstAttribute="width" constant="120" id="M8y-oU-nhs"/>
@@ -84,7 +85,7 @@
                         <constraint firstAttribute="trailing" secondItem="mob-LP-Vui" secondAttribute="trailing" id="9j5-7T-jA5"/>
                         <constraint firstItem="PgU-0F-UGm" firstAttribute="top" secondItem="mob-LP-Vui" secondAttribute="bottom" constant="20" id="Fp0-OI-bew"/>
                         <constraint firstItem="ufh-on-Stn" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="PMG-Ng-GNs"/>
-                        <constraint firstAttribute="width" constant="180" id="R1w-kB-3K6"/>
+                        <constraint firstAttribute="width" constant="220" id="R1w-kB-3K6"/>
                         <constraint firstAttribute="bottom" secondItem="ufh-on-Stn" secondAttribute="bottom" constant="20" id="gg7-hZ-Yfj"/>
                         <constraint firstItem="QeN-e6-Dkl" firstAttribute="top" secondItem="PgU-0F-UGm" secondAttribute="bottom" constant="20" id="hbx-xv-EKR"/>
                         <constraint firstItem="PgU-0F-UGm" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="q3J-X1-vfL"/>
@@ -94,16 +95,16 @@
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="lWs-3q-lUN">
-                    <rect key="frame" x="180" y="0.0" width="600" height="602"/>
+                    <rect key="frame" x="220" y="0.0" width="560" height="602"/>
                     <subviews>
-                        <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cb3-on-p7N">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="602"/>
+                        <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cb3-on-p7N">
+                            <rect key="frame" x="0.0" y="0.0" width="560" height="602"/>
                             <clipView key="contentView" id="2vU-6E-Czn">
-                                <rect key="frame" x="1" y="1" width="598" height="600"/>
+                                <rect key="frame" x="1" y="1" width="558" height="600"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <collectionView id="tLJ-h7-9xM">
-                                        <rect key="frame" x="0.0" y="0.0" width="598" height="158"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="558" height="600"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="mMA-xX-7sq">
                                             <size key="itemSize" width="50" height="50"/>
@@ -113,7 +114,7 @@
                                 </subviews>
                             </clipView>
                             <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="h9p-fG-SWr">
-                                <rect key="frame" x="1" y="579" width="584" height="16"/>
+                                <rect key="frame" x="-100" y="-100" width="584" height="16"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
                             <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Br8-s2-3zQ">
@@ -122,21 +123,21 @@
                             </scroller>
                         </scrollView>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="piP-zx-wfA">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="602"/>
+                            <rect key="frame" x="0.0" y="0.0" width="560" height="602"/>
                             <subviews>
                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="100" verticalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="bbb-0J-N2P">
-                                    <rect key="frame" x="0.0" y="60" width="600" height="542"/>
+                                    <rect key="frame" x="0.0" y="60" width="560" height="542"/>
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="wLi-Oi-DqX"/>
                                 </imageView>
-                                <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZWX-Kx-rwg">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZWX-Kx-rwg">
+                                    <rect key="frame" x="0.0" y="0.0" width="560" height="60"/>
                                     <clipView key="contentView" id="LSi-AN-Duq">
-                                        <rect key="frame" x="1" y="1" width="598" height="58"/>
+                                        <rect key="frame" x="1" y="1" width="558" height="58"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <collectionView id="Eom-uv-zaB">
-                                                <rect key="frame" x="0.0" y="0.0" width="598" height="158"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="558" height="58"/>
+                                                <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                                                 <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" scrollDirection="horizontal" id="f3z-EO-C0R">
                                                     <size key="itemSize" width="50" height="50"/>
                                                 </collectionViewFlowLayout>
@@ -148,16 +149,16 @@
                                         <constraint firstAttribute="height" constant="60" id="e8P-Uy-avc"/>
                                     </constraints>
                                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="jE9-YB-FnW">
-                                        <rect key="frame" x="1" y="144" width="233" height="15"/>
+                                        <rect key="frame" x="1" y="43" width="558" height="16"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
-                                    <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Uv7-kb-NMQ">
-                                        <rect key="frame" x="583" y="1" width="16" height="58"/>
+                                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Uv7-kb-NMQ">
+                                        <rect key="frame" x="-100" y="-100" width="16" height="58"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pbo-Bm-nkN">
-                                    <rect key="frame" x="540" y="540.5" width="40.5" height="44"/>
+                                    <rect key="frame" x="500" y="540.5" width="40.5" height="44"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="40" id="SsQ-8A-aqc"/>
                                         <constraint firstAttribute="height" constant="40" id="fHo-eI-g1P"/>

@@ -21,6 +21,7 @@
 		1AE87160288A83670002EDCA /* MainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AE8715E288A83670002EDCA /* MainWindowController.xib */; };
 		1AE87167288AA6970002EDCA /* ViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE87165288AA6970002EDCA /* ViewerViewController.swift */; };
 		1AE87168288AA6970002EDCA /* ViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1AE87166288AA6970002EDCA /* ViewerViewController.xib */; };
+		1AF4F7532890763B004221DB /* NSColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF4F7522890763B004221DB /* NSColor+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		1AE8715E288A83670002EDCA /* MainWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindowController.xib; sourceTree = "<group>"; };
 		1AE87165288AA6970002EDCA /* ViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerViewController.swift; sourceTree = "<group>"; };
 		1AE87166288AA6970002EDCA /* ViewerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewerViewController.xib; sourceTree = "<group>"; };
+		1AF4F7522890763B004221DB /* NSColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSColor+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				1A8BAB0E288BFB3800DE4E95 /* NSImageView+Extension.swift */,
+				1AF4F7522890763B004221DB /* NSColor+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 			files = (
 				1AE87167288AA6970002EDCA /* ViewerViewController.swift in Sources */,
 				1A1764C1284D509D00ED49DC /* AppDelegate.swift in Sources */,
+				1AF4F7532890763B004221DB /* NSColor+Extension.swift in Sources */,
 				1A3B926F288DA556005AE411 /* ThumbnailCollectionViewItem.swift in Sources */,
 				1A8BAB0F288BFB3800DE4E95 /* NSImageView+Extension.swift in Sources */,
 				1A1764D7284D516600ED49DC /* FileCollectionViewItem.swift in Sources */,

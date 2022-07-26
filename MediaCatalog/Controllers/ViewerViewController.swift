@@ -29,6 +29,8 @@ class ViewerViewController: NSViewController {
     
     /// Center gallery
     
+    @IBOutlet weak var contentView: NSView!
+    
     @IBOutlet weak var galleryCollectionViewScrollView: NSScrollView!
     @IBOutlet weak var galleryCollectionView: NSCollectionView!
     
@@ -110,8 +112,14 @@ class ViewerViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(reloadUI), name: NSNotification.Name("PhotosDB-Populated"), object: nil)
         
         // Views.
+        sideMenuView.wantsLayer = true
+        sideMenuView.layer?.backgroundColor = NSColor.MediaCatalog.grey?.cgColor
+        contentView.wantsLayer = true
+        contentView.layer?.backgroundColor = NSColor.MediaCatalog.lightGrey?.cgColor
+        
+        // Buttons.
         closeSelectedPhotoViewerButton.wantsLayer = true
-        closeSelectedPhotoViewerButton.layer?.backgroundColor = NSColor.black.cgColor
+        closeSelectedPhotoViewerButton.layer?.backgroundColor = NSColor.MediaCatalog.darkGrey?.cgColor
         closeSelectedPhotoViewerButton.contentTintColor = NSColor.white
         closeSelectedPhotoViewerButton.layer?.cornerRadius = 6
         closeSelectedPhotoViewerButton.layer?.borderWidth = 1
@@ -144,6 +152,9 @@ class ViewerViewController: NSViewController {
         flowLayout.scrollDirection = .vertical
         galleryCollectionView.collectionViewLayout = flowLayout
         
+        galleryCollectionView.wantsLayer = true
+        galleryCollectionView.layer?.backgroundColor = NSColor.MediaCatalog.lightGrey?.cgColor
+        
         // Register the Cells / Items for the CollectionView.
         let photoCellNib = NSNib(nibNamed: "FileCollectionViewItem", bundle: nil)
         galleryCollectionView.register(photoCellNib, forItemWithIdentifier: NSUserInterfaceItemIdentifier(rawValue: "PhotoItems"))
@@ -168,6 +179,12 @@ class ViewerViewController: NSViewController {
         flowLayout.itemSize = NSSize(width: 60, height: 60)
         flowLayout.scrollDirection = .horizontal
         thumbnailsCollectionView.collectionViewLayout = flowLayout
+        
+        thumbnailsCollectionViewScrollView.wantsLayer = true
+        thumbnailsCollectionViewScrollView.layer?.backgroundColor = NSColor.red.cgColor
+        
+        thumbnailsCollectionView.wantsLayer = true
+        thumbnailsCollectionView.layer?.backgroundColor = NSColor.white.cgColor
         
         // Register the Cells / Items for the CollectionView.
         let thumbnailCellNib = NSNib(nibNamed: "ThumbnailCollectionViewItem", bundle: nil)
