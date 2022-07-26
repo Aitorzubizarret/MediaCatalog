@@ -8,12 +8,16 @@
         <customObject id="-2" userLabel="File's Owner" customClass="ViewerViewController" customModule="MediaCatalog" customModuleProvider="target">
             <connections>
                 <outlet property="closePhotoButton" destination="IU3-ge-MJr" id="zCK-cI-u4H"/>
-                <outlet property="collectionView" destination="tLJ-h7-9xM" id="J7g-2r-sCJ"/>
-                <outlet property="collectionViewScrollView" destination="Cb3-on-p7N" id="gnW-PZ-pyk"/>
                 <outlet property="detectFacesButton" destination="QeN-e6-Dkl" id="jPS-P4-pC6"/>
+                <outlet property="galleryCollectionView" destination="tLJ-h7-9xM" id="PuF-Kc-gmC"/>
+                <outlet property="galleryCollectionViewScrollView" destination="Cb3-on-p7N" id="cyw-gk-9Sk"/>
                 <outlet property="imageView" destination="bbb-0J-N2P" id="ruD-vP-quy"/>
                 <outlet property="importFolderButton" destination="VfI-v7-Lwa" id="TCY-HH-ffY"/>
                 <outlet property="importedFilesTypesLabel" destination="ufh-on-Stn" id="cp4-Qb-OSZ"/>
+                <outlet property="selectedPhotoViewerView" destination="piP-zx-wfA" id="q0u-xH-32i"/>
+                <outlet property="sideMenuView" destination="QkP-80-bxS" id="DeA-MS-1X6"/>
+                <outlet property="thumbnailsCollectionView" destination="Eom-uv-zaB" id="932-46-DGe"/>
+                <outlet property="thumbnailsCollectionViewScrollView" destination="ZWX-Kx-rwg" id="3n8-cK-wog"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -132,20 +136,62 @@
                                 <autoresizingMask key="autoresizingMask"/>
                             </scroller>
                         </scrollView>
-                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="100" verticalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="bbb-0J-N2P">
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="piP-zx-wfA">
                             <rect key="frame" x="0.0" y="0.0" width="600" height="602"/>
-                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="wLi-Oi-DqX"/>
-                        </imageView>
+                            <subviews>
+                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="100" verticalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="bbb-0J-N2P">
+                                    <rect key="frame" x="0.0" y="60" width="600" height="542"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="wLi-Oi-DqX"/>
+                                </imageView>
+                                <scrollView wantsLayer="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZWX-Kx-rwg">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                                    <clipView key="contentView" id="LSi-AN-Duq">
+                                        <rect key="frame" x="1" y="1" width="598" height="58"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <collectionView id="Eom-uv-zaB">
+                                                <rect key="frame" x="0.0" y="0.0" width="598" height="158"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" scrollDirection="horizontal" id="f3z-EO-C0R">
+                                                    <size key="itemSize" width="50" height="50"/>
+                                                </collectionViewFlowLayout>
+                                                <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </collectionView>
+                                        </subviews>
+                                    </clipView>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="60" id="e8P-Uy-avc"/>
+                                    </constraints>
+                                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="jE9-YB-FnW">
+                                        <rect key="frame" x="1" y="144" width="233" height="15"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                    <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Uv7-kb-NMQ">
+                                        <rect key="frame" x="583" y="1" width="16" height="58"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                </scrollView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="ZWX-Kx-rwg" firstAttribute="top" secondItem="bbb-0J-N2P" secondAttribute="bottom" id="0At-ey-GG5"/>
+                                <constraint firstItem="bbb-0J-N2P" firstAttribute="leading" secondItem="piP-zx-wfA" secondAttribute="leading" id="6yl-am-N0N"/>
+                                <constraint firstAttribute="trailing" secondItem="ZWX-Kx-rwg" secondAttribute="trailing" id="ID0-LD-jX3"/>
+                                <constraint firstAttribute="bottom" secondItem="ZWX-Kx-rwg" secondAttribute="bottom" id="S1h-Gc-nXc"/>
+                                <constraint firstAttribute="trailing" secondItem="bbb-0J-N2P" secondAttribute="trailing" id="Uwf-kp-n5I"/>
+                                <constraint firstItem="bbb-0J-N2P" firstAttribute="top" secondItem="piP-zx-wfA" secondAttribute="top" id="lwW-sa-YS9"/>
+                                <constraint firstItem="ZWX-Kx-rwg" firstAttribute="leading" secondItem="piP-zx-wfA" secondAttribute="leading" id="uL2-vu-bN9"/>
+                            </constraints>
+                        </customView>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="bbb-0J-N2P" firstAttribute="top" secondItem="lWs-3q-lUN" secondAttribute="top" id="EPP-Bs-2tz"/>
-                        <constraint firstItem="bbb-0J-N2P" firstAttribute="leading" secondItem="lWs-3q-lUN" secondAttribute="leading" id="Fd2-8j-9gt"/>
+                        <constraint firstAttribute="trailing" secondItem="piP-zx-wfA" secondAttribute="trailing" id="189-Pm-H0Q"/>
+                        <constraint firstItem="piP-zx-wfA" firstAttribute="top" secondItem="lWs-3q-lUN" secondAttribute="top" id="F1d-gn-83Z"/>
+                        <constraint firstItem="piP-zx-wfA" firstAttribute="leading" secondItem="lWs-3q-lUN" secondAttribute="leading" id="Fgb-tr-5xi"/>
                         <constraint firstAttribute="trailing" secondItem="Cb3-on-p7N" secondAttribute="trailing" id="Kf6-Mc-WXB"/>
-                        <constraint firstAttribute="trailing" secondItem="bbb-0J-N2P" secondAttribute="trailing" id="NvZ-ji-B7G"/>
                         <constraint firstItem="Cb3-on-p7N" firstAttribute="top" secondItem="lWs-3q-lUN" secondAttribute="top" id="TjU-U7-k2R"/>
                         <constraint firstItem="Cb3-on-p7N" firstAttribute="leading" secondItem="lWs-3q-lUN" secondAttribute="leading" id="Wb5-vj-CMF"/>
                         <constraint firstAttribute="bottom" secondItem="Cb3-on-p7N" secondAttribute="bottom" id="fHA-fD-hR1"/>
-                        <constraint firstAttribute="bottom" secondItem="bbb-0J-N2P" secondAttribute="bottom" id="mJr-ry-D5t"/>
+                        <constraint firstAttribute="bottom" secondItem="piP-zx-wfA" secondAttribute="bottom" id="jZc-tk-KLf"/>
                     </constraints>
                 </customView>
             </subviews>

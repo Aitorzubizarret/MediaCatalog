@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="ThumbnailCollectionViewItem" customModule="MediaCatalog" customModuleProvider="target">
+            <connections>
+                <outlet property="darkImageView" destination="d3O-jd-Mq1" id="u3o-0g-Wnv"/>
+                <outlet property="thumbnailImageView" destination="a8Z-Qo-ZXt" id="lZP-0u-YY1"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a8Z-Qo-ZXt">
+                    <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="HcU-Dw-WSZ"/>
+                </imageView>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="d3O-jd-Mq1">
+                    <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="hJu-42-VbN"/>
+                </imageView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="a8Z-Qo-ZXt" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="6tH-Lb-ViB"/>
+                <constraint firstAttribute="bottom" secondItem="d3O-jd-Mq1" secondAttribute="bottom" id="Xq5-d4-BP8"/>
+                <constraint firstAttribute="trailing" secondItem="d3O-jd-Mq1" secondAttribute="trailing" id="YI7-24-Dhz"/>
+                <constraint firstItem="d3O-jd-Mq1" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="ZCA-fT-o80"/>
+                <constraint firstItem="a8Z-Qo-ZXt" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="bfD-Fw-Pcb"/>
+                <constraint firstAttribute="bottom" secondItem="a8Z-Qo-ZXt" secondAttribute="bottom" id="c0R-66-n9J"/>
+                <constraint firstItem="d3O-jd-Mq1" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="rM3-ax-F6c"/>
+                <constraint firstAttribute="trailing" secondItem="a8Z-Qo-ZXt" secondAttribute="trailing" id="wxB-pr-NGs"/>
+            </constraints>
+            <point key="canvasLocation" x="139" y="136"/>
+        </customView>
+        <collectionViewItem id="t1y-da-Gxw" customClass="ThumbnailCollectionViewItem" customModule="MediaCatalog" customModuleProvider="target"/>
+    </objects>
+</document>
