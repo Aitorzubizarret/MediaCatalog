@@ -7,7 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ViewerViewController" customModule="MediaCatalog" customModuleProvider="target">
             <connections>
-                <outlet property="closePhotoButton" destination="IU3-ge-MJr" id="zCK-cI-u4H"/>
+                <outlet property="closeSelectedPhotoViewerButton" destination="pbo-Bm-nkN" id="Ddx-tM-bsk"/>
                 <outlet property="detectFacesButton" destination="QeN-e6-Dkl" id="jPS-P4-pC6"/>
                 <outlet property="galleryCollectionView" destination="tLJ-h7-9xM" id="PuF-Kc-gmC"/>
                 <outlet property="galleryCollectionViewScrollView" destination="Cb3-on-p7N" id="cyw-gk-9Sk"/>
@@ -54,21 +54,8 @@
                                 </connections>
                             </buttonCell>
                         </button>
-                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="IU3-ge-MJr">
-                            <rect key="frame" x="23" y="460" width="134" height="32"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="120" id="JPa-ex-JJY"/>
-                            </constraints>
-                            <buttonCell key="cell" type="push" title="Close photo" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="D5D-BU-7uy">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="closePhotoButtonTapped:" target="-2" id="3GM-iI-fqk"/>
-                            </connections>
-                        </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QeN-e6-Dkl">
-                            <rect key="frame" x="23" y="425" width="134" height="32"/>
+                            <rect key="frame" x="23" y="455" width="134" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="VR5-Ag-epj"/>
                             </constraints>
@@ -94,14 +81,12 @@
                         </textField>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="IU3-ge-MJr" firstAttribute="top" secondItem="PgU-0F-UGm" secondAttribute="bottom" constant="15" id="8RX-VK-tfI"/>
                         <constraint firstAttribute="trailing" secondItem="mob-LP-Vui" secondAttribute="trailing" id="9j5-7T-jA5"/>
                         <constraint firstItem="PgU-0F-UGm" firstAttribute="top" secondItem="mob-LP-Vui" secondAttribute="bottom" constant="20" id="Fp0-OI-bew"/>
                         <constraint firstItem="ufh-on-Stn" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="PMG-Ng-GNs"/>
                         <constraint firstAttribute="width" constant="180" id="R1w-kB-3K6"/>
-                        <constraint firstItem="QeN-e6-Dkl" firstAttribute="top" secondItem="IU3-ge-MJr" secondAttribute="bottom" constant="15" id="YvH-LP-ufd"/>
-                        <constraint firstItem="IU3-ge-MJr" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="b9A-DD-CY0"/>
                         <constraint firstAttribute="bottom" secondItem="ufh-on-Stn" secondAttribute="bottom" constant="20" id="gg7-hZ-Yfj"/>
+                        <constraint firstItem="QeN-e6-Dkl" firstAttribute="top" secondItem="PgU-0F-UGm" secondAttribute="bottom" constant="20" id="hbx-xv-EKR"/>
                         <constraint firstItem="PgU-0F-UGm" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="q3J-X1-vfL"/>
                         <constraint firstItem="mob-LP-Vui" firstAttribute="leading" secondItem="QkP-80-bxS" secondAttribute="leading" id="qCd-pa-0E6"/>
                         <constraint firstItem="QeN-e6-Dkl" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="tRB-fU-uWS"/>
@@ -171,15 +156,31 @@
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
+                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pbo-Bm-nkN">
+                                    <rect key="frame" x="540" y="540.5" width="40.5" height="44"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="40" id="SsQ-8A-aqc"/>
+                                        <constraint firstAttribute="height" constant="40" id="fHo-eI-g1P"/>
+                                    </constraints>
+                                    <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="xmark" catalog="system" imagePosition="only" alignment="center" state="on" inset="2" id="MoW-dN-frl">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="closeSelectedPhotoViewerButtonTapped:" target="-2" id="9uQ-bg-NpY"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="ZWX-Kx-rwg" firstAttribute="top" secondItem="bbb-0J-N2P" secondAttribute="bottom" id="0At-ey-GG5"/>
                                 <constraint firstItem="bbb-0J-N2P" firstAttribute="leading" secondItem="piP-zx-wfA" secondAttribute="leading" id="6yl-am-N0N"/>
                                 <constraint firstAttribute="trailing" secondItem="ZWX-Kx-rwg" secondAttribute="trailing" id="ID0-LD-jX3"/>
                                 <constraint firstAttribute="bottom" secondItem="ZWX-Kx-rwg" secondAttribute="bottom" id="S1h-Gc-nXc"/>
+                                <constraint firstItem="pbo-Bm-nkN" firstAttribute="top" secondItem="piP-zx-wfA" secondAttribute="top" constant="20" id="U3Z-Hb-ygz"/>
                                 <constraint firstAttribute="trailing" secondItem="bbb-0J-N2P" secondAttribute="trailing" id="Uwf-kp-n5I"/>
                                 <constraint firstItem="bbb-0J-N2P" firstAttribute="top" secondItem="piP-zx-wfA" secondAttribute="top" id="lwW-sa-YS9"/>
                                 <constraint firstItem="ZWX-Kx-rwg" firstAttribute="leading" secondItem="piP-zx-wfA" secondAttribute="leading" id="uL2-vu-bN9"/>
+                                <constraint firstAttribute="trailing" secondItem="pbo-Bm-nkN" secondAttribute="trailing" constant="20" id="udq-EN-dap"/>
                             </constraints>
                         </customView>
                     </subviews>
@@ -207,4 +208,7 @@
             <point key="canvasLocation" x="230" y="184"/>
         </customView>
     </objects>
+    <resources>
+        <image name="xmark" catalog="system" width="14" height="13"/>
+    </resources>
 </document>

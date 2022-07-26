@@ -20,11 +20,6 @@ class ViewerViewController: NSViewController {
         loadImages()
     }
     
-    @IBOutlet weak var closePhotoButton: NSButton!
-    @IBAction func closePhotoButtonTapped(_ sender: Any) {
-        photoOnDisplay = false
-    }
-    
     @IBOutlet weak var detectFacesButton: NSButton!
     @IBAction func detectFacesButtonTapped(_ sender: Any) {
         detectFaces()
@@ -40,6 +35,10 @@ class ViewerViewController: NSViewController {
     /// Center selected photo view
     
     @IBOutlet weak var selectedPhotoViewerView: NSView!
+    @IBOutlet weak var closeSelectedPhotoViewerButton: NSButton!
+    @IBAction func closeSelectedPhotoViewerButtonTapped(_ sender: Any) {
+        photoOnDisplay = false
+    }
     @IBOutlet weak var imageView: NSImageView!
     @IBOutlet weak var thumbnailsCollectionViewScrollView: NSScrollView!
     @IBOutlet weak var thumbnailsCollectionView: NSCollectionView!
@@ -52,7 +51,6 @@ class ViewerViewController: NSViewController {
         didSet {
             if photoOnDisplay {
                 // Buttons.
-                closePhotoButton.isHidden = false
                 detectFacesButton.isHidden = false
                 
                 // ScrollViews
@@ -66,7 +64,6 @@ class ViewerViewController: NSViewController {
                 selectedPhotoViewerView.isHidden = false
             } else {
                 // Buttons.
-                closePhotoButton.isHidden = true
                 detectFacesButton.isHidden = true
                 
                 // ImageViews.
@@ -111,6 +108,14 @@ class ViewerViewController: NSViewController {
     ///
     private func setupView() {
         NotificationCenter.default.addObserver(self, selector: #selector(reloadUI), name: NSNotification.Name("PhotosDB-Populated"), object: nil)
+        
+        // Views.
+        closeSelectedPhotoViewerButton.wantsLayer = true
+        closeSelectedPhotoViewerButton.layer?.backgroundColor = NSColor.black.cgColor
+        closeSelectedPhotoViewerButton.contentTintColor = NSColor.white
+        closeSelectedPhotoViewerButton.layer?.cornerRadius = 6
+        closeSelectedPhotoViewerButton.layer?.borderWidth = 1
+        closeSelectedPhotoViewerButton.layer?.borderColor = NSColor.white.cgColor
         
         // Labels.
         importedFilesTypesLabel.stringValue = ""
