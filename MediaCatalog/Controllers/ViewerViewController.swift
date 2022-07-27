@@ -47,7 +47,6 @@ class ViewerViewController: NSViewController {
     
     // MARK: - Properties
     
-    private var previouslySelectedPhotoIndex: IndexPath?
     private var selectedPhotoIndex: IndexPath?
     private var photoOnDisplay: Bool = false {
         didSet {
@@ -146,8 +145,8 @@ class ViewerViewController: NSViewController {
         // Design.
         let flowLayout = NSCollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 0
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.sectionInset = NSEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0)
+        flowLayout.minimumLineSpacing = 2
+        flowLayout.sectionInset = NSEdgeInsets(top: 2.0, left: 2.0, bottom: 2.0, right: 2.0)
         flowLayout.itemSize = NSSize(width: 160.0, height: 200.0)
         flowLayout.scrollDirection = .vertical
         galleryCollectionView.collectionViewLayout = flowLayout
@@ -238,13 +237,9 @@ extension ViewerViewController: NSCollectionViewDelegate {
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
         guard let safeIndexPath = indexPaths.first else { return }
         
-        previouslySelectedPhotoIndex = selectedPhotoIndex
         selectedPhotoIndex = safeIndexPath
         
-        if collectionView == galleryCollectionView {
-            displaySelectedPhoto(file: FilesDB.shared.getFile(at: safeIndexPath.item))
-            collectionView.deselectAll(self)
-        } else {
+        if collectionView == thumbnailsCollectionView {
             updateThumbnailsCollectionViewPhoto(file: FilesDB.shared.getFile(at: safeIndexPath.item))
         }
     }
@@ -266,7 +261,15 @@ extension ViewerViewController: NSCollectionViewDataSource {
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         if collectionView == galleryCollectionView {
             let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "PhotoItems"), for: indexPath) as! FileCollectionViewItem
-            item.file = FilesDB.shared.getFile(at: indexPath.item)
+            item.delegate = self
+            if let safeSelectedPhotoIndex = selectedPhotoIndex {
+                if safeSelectedPhotoIndex.item == indexPath.item {
+                    item.isSelected = true
+                } else {
+                    item.isSelected = false
+                }
+            }
+            item.fileIndexPath = indexPath
             return item
         } else {
             let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ThumbnailItems"), for: indexPath) as! ThumbnailCollectionViewItem
@@ -296,7 +299,7 @@ extension ViewerViewController {
         
         // File thumbnail.
         switch safeFile.getOriginalPath().pathExtension {
-        case "arw", "ARW":
+        case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
             imageView.image = safeFile.getThumbnailImage()
         case "jpg", "JPG", "jpeg", "JPEG":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
@@ -313,15 +316,14 @@ extension ViewerViewController {
     
     private func updateThumbnailsCollectionViewPhoto(file: File?) {
         guard let safeFile = file,
-              let safeSelectedPhotoIndex = selectedPhotoIndex,
-              let safePreviouslySelectedPhotoIndex = previouslySelectedPhotoIndex else { return }
+              let safeSelectedPhotoIndex = selectedPhotoIndex else { return }
         
         // CAShapeLayers
         faceRectangleLayer.sublayers?.removeAll()
         
         // File thumbnail.
         switch safeFile.getOriginalPath().pathExtension {
-        case "arw", "ARW":
+        case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
             imageView.image = safeFile.getThumbnailImage()
         case "jpg", "JPG", "jpeg", "JPEG":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
@@ -331,7 +333,37 @@ extension ViewerViewController {
             imageView.image = NSImage(named: "unknownFileExtension")
         }
         
-        thumbnailsCollectionView.reloadItems(at: [safePreviouslySelectedPhotoIndex, safeSelectedPhotoIndex])
+        //thumbnailsCollectionView.reloadItems(at: [safePreviouslySelectedPhotoIndex, safeSelectedPhotoIndex])
+    }
+    
+}
+
+// MARK: - File Item Actions Delegate
+
+extension ViewerViewController: FileItemActions {
+    
+    func selectFile(fileIndexPath: IndexPath?) {
+        guard let safeFileIndexPath = fileIndexPath else { return }
+        
+        if let safeSelectedPhotoIndex = selectedPhotoIndex {
+            if safeSelectedPhotoIndex == safeFileIndexPath {
+                galleryCollectionView.deselectItems(at: [safeFileIndexPath])
+                selectedPhotoIndex = nil
+            } else {
+                galleryCollectionView.deselectItems(at: [safeSelectedPhotoIndex])
+                galleryCollectionView.selectItems(at: [safeFileIndexPath], scrollPosition: .init())
+                selectedPhotoIndex = safeFileIndexPath
+            }
+        } else {
+            selectedPhotoIndex = safeFileIndexPath
+            galleryCollectionView.selectItems(at: [safeFileIndexPath], scrollPosition: .init())
+        }
+    }
+    
+    func openFile(fileIndexPath: IndexPath?) {
+        guard let safeFileIndexPath = fileIndexPath else { return }
+        
+        displaySelectedPhoto(file: FilesDB.shared.getFile(at: safeFileIndexPath.item))
     }
     
 }

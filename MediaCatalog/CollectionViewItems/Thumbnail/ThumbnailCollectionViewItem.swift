@@ -22,7 +22,7 @@ class ThumbnailCollectionViewItem: NSCollectionViewItem {
             
             // File thumbnail.
             switch safeFile.getOriginalPath().pathExtension {
-            case "arw", "ARW":
+            case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
                 thumbnailImageView.image = safeFile.getThumbnailImage()
             case "jpg", "JPG", "jpeg", "JPEG":
                 thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())

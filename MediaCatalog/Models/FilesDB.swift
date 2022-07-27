@@ -85,7 +85,7 @@ final class FilesDB {
                 
                 // Check file extension.
                 switch fileURL.pathExtension {
-                case "ARW":
+                case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
                     self.RAWPhotos += 1
                     fileThumbnailImage = self.createThumbnail(fileURL: fileURL)
                 case "jpg", "JPG", "jpeg", "JPEG":

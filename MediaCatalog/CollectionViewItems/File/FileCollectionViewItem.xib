@@ -19,11 +19,11 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xRB-eH-3GU">
-                    <rect key="frame" x="0.0" y="40" width="160" height="160"/>
+                    <rect key="frame" x="6" y="40" width="148" height="154"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="A1O-zV-aRM"/>
                 </imageView>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="HiS-hW-MhY">
-                    <rect key="frame" x="-2" y="0.0" width="164" height="30"/>
+                    <rect key="frame" x="4" y="0.0" width="152" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="OSS-6o-RnX"/>
                     </constraints>
@@ -36,11 +36,11 @@
             </subviews>
             <constraints>
                 <constraint firstItem="HiS-hW-MhY" firstAttribute="leading" secondItem="xRB-eH-3GU" secondAttribute="leading" id="9We-dD-kdJ"/>
-                <constraint firstAttribute="trailing" secondItem="xRB-eH-3GU" secondAttribute="trailing" id="AWO-hd-04L"/>
+                <constraint firstAttribute="trailing" secondItem="xRB-eH-3GU" secondAttribute="trailing" constant="6" id="AWO-hd-04L"/>
                 <constraint firstItem="HiS-hW-MhY" firstAttribute="top" secondItem="xRB-eH-3GU" secondAttribute="bottom" constant="10" id="GJe-5a-dL6"/>
-                <constraint firstItem="xRB-eH-3GU" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="U2g-Tg-vfI"/>
+                <constraint firstItem="xRB-eH-3GU" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="6" id="U2g-Tg-vfI"/>
                 <constraint firstItem="HiS-hW-MhY" firstAttribute="trailing" secondItem="xRB-eH-3GU" secondAttribute="trailing" id="bMX-SD-pr7"/>
-                <constraint firstItem="xRB-eH-3GU" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="qDR-vp-NlB"/>
+                <constraint firstItem="xRB-eH-3GU" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="6" id="qDR-vp-NlB"/>
                 <constraint firstAttribute="bottom" secondItem="HiS-hW-MhY" secondAttribute="bottom" id="qJU-qM-LVP"/>
             </constraints>
             <point key="canvasLocation" x="139" y="154"/>

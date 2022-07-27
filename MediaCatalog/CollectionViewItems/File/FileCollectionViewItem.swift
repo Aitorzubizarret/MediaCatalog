@@ -7,6 +7,11 @@
 
 import Cocoa
 
+protocol FileItemActions {
+    func selectFile(fileIndexPath: IndexPath?)
+    func openFile(fileIndexPath: IndexPath?)
+}
+
 class FileCollectionViewItem: NSCollectionViewItem {
     
     // MARK: - UI Elements
@@ -16,21 +21,23 @@ class FileCollectionViewItem: NSCollectionViewItem {
     
     // MARK: Properties
     
-    public var file: File? {
+    public var delegate: FileItemActions?
+    public var fileIndexPath: IndexPath? {
         didSet {
-            guard let safeFile = file else { return }
+            guard let safeFileIndexPath = fileIndexPath,
+                  let file = FilesDB.shared.getFile(at: safeFileIndexPath.item) else { return }
             
             // File name.
-            nameLabel.stringValue = safeFile.getName()
+            nameLabel.stringValue = file.getName()
             
             // File thumbnail.
-            switch safeFile.getOriginalPath().pathExtension {
-            case "arw", "ARW":
-                thumbnailImageView.image = safeFile.getThumbnailImage()
+            switch file.getOriginalPath().pathExtension {
+            case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
+                thumbnailImageView.image = file.getThumbnailImage()
             case "jpg", "JPG", "jpeg", "JPEG":
-                thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
+                thumbnailImageView.loadFrom(localPath: file.getOriginalPath())
             case "png", "PNG":
-                thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
+                thumbnailImageView.loadFrom(localPath: file.getOriginalPath())
             default:
                 thumbnailImageView.image = NSImage(named: "unknownFileExtension")
             }
@@ -41,7 +48,32 @@ class FileCollectionViewItem: NSCollectionViewItem {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
+        
+        //self.view = NSView()
+        self.view.wantsLayer = true
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        switch event.clickCount {
+        case 1:
+            if let safeDelegate = delegate {
+                safeDelegate.selectFile(fileIndexPath: fileIndexPath)
+            }
+        case 2:
+            if let safeDelegate = delegate {
+                safeDelegate.openFile(fileIndexPath: fileIndexPath)
+            }
+        default:
+            print("Aitor mouseUp")
+        }
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+            super.isSelected = isSelected
+            
+            view.layer?.backgroundColor = isSelected ? NSColor.MediaCatalog.grey?.cgColor : NSColor.MediaCatalog.lightGrey?.cgColor
+        }
     }
     
 }
