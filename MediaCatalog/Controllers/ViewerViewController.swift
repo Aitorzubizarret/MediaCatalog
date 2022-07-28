@@ -220,9 +220,17 @@ class ViewerViewController: NSViewController {
             self.galleryCollectionView.reloadData()
             
             var finalText: String = ""
-            finalText += "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW, "
-            finalText += "\(FilesDB.shared.count(extensionType: .JPEGPhoto)) JPG, "
+            finalText += "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW"
+            finalText += "\n"
+            finalText += "\(FilesDB.shared.count(extensionType: .JPEGPhoto)) JPG"
+            finalText += "\n"
             finalText += "\(FilesDB.shared.count(extensionType: .PNGPhoto)) PNG"
+            finalText += "\n"
+            finalText += "\(FilesDB.shared.count(extensionType: .GIFPhoto)) GIF"
+            finalText += "\n"
+            finalText += "\(FilesDB.shared.count(extensionType: .BMPPhoto)) BMP"
+            finalText += "\n"
+            finalText += "\(FilesDB.shared.count(extensionType: .WEBPPhoto)) WEBP"
             
             self.importedFilesTypesLabel.stringValue = finalText
         }

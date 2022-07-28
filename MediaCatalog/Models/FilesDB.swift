@@ -24,6 +24,9 @@ final class FilesDB {
             RAWPhotos = 0
             JPEGPhotos = 0
             PNGPhotos = 0
+            GIFPhotos = 0
+            BMPPhotos = 0
+            WEBPPhotos = 0
             
             let selectedFilesURLs: [URL] = contentsOf(folder: safePath)
             
@@ -37,6 +40,9 @@ final class FilesDB {
     private var RAWPhotos: Int = 0
     private var JPEGPhotos: Int = 0
     private var PNGPhotos: Int = 0
+    private var GIFPhotos: Int = 0
+    private var BMPPhotos: Int = 0
+    private var WEBPPhotos: Int = 0
     
     // MARK: - Methods
     
@@ -62,6 +68,12 @@ final class FilesDB {
             return JPEGPhotos
         case .PNGPhoto:
             return PNGPhotos
+        case .GIFPhoto:
+            return GIFPhotos
+        case .BMPPhoto:
+            return BMPPhotos
+        case .WEBPPhoto:
+            return WEBPPhotos
         case .all:
             return files.count
         }
@@ -94,8 +106,14 @@ final class FilesDB {
                 case "png", "PNG":
                     self.PNGPhotos += 1
                     // Maybe later we are going to create thumbnails for the big PNG photos.
+                case "gif", "GIF":
+                    self.GIFPhotos += 1
+                case "bmp", "BMP":
+                    self.BMPPhotos += 1
+                case "webp", "WEBP":
+                    self.WEBPPhotos += 1
                 default:
-                    print("Rest of the files")
+                    print("Other extension \(fileURL.pathExtension)")
                 }
                 
                 // Create the File element.

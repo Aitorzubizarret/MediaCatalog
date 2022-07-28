@@ -69,10 +69,9 @@
                             </connections>
                         </button>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ufh-on-Stn">
-                            <rect key="frame" x="48" y="20" width="124" height="20"/>
+                            <rect key="frame" x="18" y="20" width="184" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="BED-8T-GDS"/>
-                                <constraint firstAttribute="width" constant="120" id="M8y-oU-nhs"/>
                             </constraints>
                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Files types" id="oit-7Z-qoV">
                                 <font key="font" metaFont="smallSystem"/>
@@ -84,8 +83,10 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="mob-LP-Vui" secondAttribute="trailing" id="9j5-7T-jA5"/>
                         <constraint firstItem="PgU-0F-UGm" firstAttribute="top" secondItem="mob-LP-Vui" secondAttribute="bottom" constant="20" id="Fp0-OI-bew"/>
+                        <constraint firstAttribute="trailing" secondItem="ufh-on-Stn" secondAttribute="trailing" constant="20" id="Hyb-eZ-ZDE"/>
                         <constraint firstItem="ufh-on-Stn" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="PMG-Ng-GNs"/>
                         <constraint firstAttribute="width" constant="220" id="R1w-kB-3K6"/>
+                        <constraint firstItem="ufh-on-Stn" firstAttribute="leading" secondItem="QkP-80-bxS" secondAttribute="leading" constant="20" id="fwZ-nL-XmZ"/>
                         <constraint firstAttribute="bottom" secondItem="ufh-on-Stn" secondAttribute="bottom" constant="20" id="gg7-hZ-Yfj"/>
                         <constraint firstItem="QeN-e6-Dkl" firstAttribute="top" secondItem="PgU-0F-UGm" secondAttribute="bottom" constant="20" id="hbx-xv-EKR"/>
                         <constraint firstItem="PgU-0F-UGm" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="q3J-X1-vfL"/>

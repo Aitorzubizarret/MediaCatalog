@@ -20,6 +20,25 @@ struct File {
         case RAWPhoto
         case JPEGPhoto
         case PNGPhoto
+        case GIFPhoto
+        case BMPPhoto
+        case WEBPPhoto
+        
+//        case WEBLOCDoc
+//        case PDFDoc
+//        case DOCDoc
+//        case RTFDoc
+//        case TXTDoc
+//        case PSDFile
+//        case ZIPFile
+//        case MP4Video
+//        case MOVVideo
+//        case 3GPVideo
+//        case AVIVideo
+//        case M1VVideo
+//        case WMVVideo
+//        case MP3Audio
+        
         case all
     }
     
