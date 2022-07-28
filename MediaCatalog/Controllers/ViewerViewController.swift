@@ -25,6 +25,11 @@ class ViewerViewController: NSViewController {
         detectFaces()
     }
     
+    @IBOutlet weak var showFileInFinderButton: NSButton!
+    @IBAction func showFileInFinderButtonTapped(_ sender: Any) {
+        showSelectedFileInFinder()
+    }
+    
     @IBOutlet weak var importedFilesTypesLabel: NSTextField!
     
     /// Center gallery
@@ -48,6 +53,7 @@ class ViewerViewController: NSViewController {
     // MARK: - Properties
     
     private var selectedPhotoIndex: IndexPath?
+    
     private var photoOnDisplay: Bool = false {
         didSet {
             if photoOnDisplay {
@@ -123,6 +129,8 @@ class ViewerViewController: NSViewController {
         closeSelectedPhotoViewerButton.layer?.cornerRadius = 6
         closeSelectedPhotoViewerButton.layer?.borderWidth = 1
         closeSelectedPhotoViewerButton.layer?.borderColor = NSColor.white.cgColor
+        
+        showFileInFinderButton.isHidden = true
         
         // Labels.
         importedFilesTypesLabel.stringValue = ""
@@ -206,6 +214,8 @@ class ViewerViewController: NSViewController {
             self.photoOnDisplay = false
             self.importedFilesTypesLabel.stringValue = "importing..."
             
+            self.showFileInFinderButton.isHidden = false
+            
             if result == NSApplication.ModalResponse.OK {
                 FilesDB.shared.selectedPath = fileManagerPanel.urls[0]
             }
@@ -233,6 +243,17 @@ class ViewerViewController: NSViewController {
             finalText += "\(FilesDB.shared.count(extensionType: .WEBPPhoto)) WEBP"
             
             self.importedFilesTypesLabel.stringValue = finalText
+        }
+    }
+    
+    ///
+    /// Show selected file in Finder.
+    ///
+    private func showSelectedFileInFinder() {
+        if let safeSelectedPhotoIndex = selectedPhotoIndex,
+           let safeFile: File = FilesDB.shared.getFile(at: safeSelectedPhotoIndex.item) {
+            
+            NSWorkspace.shared.activateFileViewerSelecting([safeFile.getOriginalPath()])
         }
     }
     
