@@ -32,6 +32,30 @@ class ViewerViewController: NSViewController {
     
     @IBOutlet weak var importedFilesTypesLabel: NSTextField!
     
+    /// Top bar
+    
+    @IBOutlet weak var topBarView: NSView!
+    
+    @IBOutlet weak var displayAllFilesButton: NSButton!
+    @IBAction func displayAllFilesButtonTapped(_ sender: Any) {
+        filterBy(.all)
+    }
+    
+    @IBOutlet weak var displayOnlyPhotosButton: NSButton!
+    @IBAction func displayOnlyPhotosButtonTapped(_ sender: Any) {
+        filterBy(.photos)
+    }
+    
+    @IBOutlet weak var displayOnlyVideosButton: NSButton!
+    @IBAction func displayOnlyVideosButtonTapped(_ sender: Any) {
+        filterBy(.videos)
+    }
+    
+    @IBOutlet weak var displayRestOfFilesButton: NSButton!
+    @IBAction func displayRestOfFilesButtonTapped(_ sender: Any) {
+        filterBy(.others)
+    }
+    
     /// Center gallery
     
     @IBOutlet weak var contentView: NSView!
@@ -69,6 +93,7 @@ class ViewerViewController: NSViewController {
                 
                 // Views.
                 selectedPhotoViewerView.isHidden = false
+                topBarView.isHidden = true
             } else {
                 // Buttons.
                 detectFacesButton.isHidden = true
@@ -87,6 +112,7 @@ class ViewerViewController: NSViewController {
                 
                 // Views.
                 selectedPhotoViewerView.isHidden = true
+                topBarView.isHidden = false
                 
                 if let safeSelectedPhotoIndex = selectedPhotoIndex {
                     galleryCollectionView.selectItems(at: [safeSelectedPhotoIndex], scrollPosition: .top)
@@ -129,6 +155,11 @@ class ViewerViewController: NSViewController {
         closeSelectedPhotoViewerButton.layer?.cornerRadius = 6
         closeSelectedPhotoViewerButton.layer?.borderWidth = 1
         closeSelectedPhotoViewerButton.layer?.borderColor = NSColor.white.cgColor
+        
+        displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+        displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+        displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+        displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
         
         showFileInFinderButton.isHidden = true
         
@@ -218,6 +249,11 @@ class ViewerViewController: NSViewController {
             
             if result == NSApplication.ModalResponse.OK {
                 FilesDB.shared.selectedPath = fileManagerPanel.urls[0]
+                
+                self.displayAllFilesButton.contentTintColor = NSColor.black
+                self.displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+                self.displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+                self.displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             }
         }
     }
@@ -228,6 +264,11 @@ class ViewerViewController: NSViewController {
     @objc private func reloadUI() {
         DispatchQueue.main.async {
             self.galleryCollectionView.reloadData()
+            
+            // If there are files, scroll to the top of the Collection View.
+            if FilesDB.shared.filteredFiles.count > 0 {
+                self.galleryCollectionView.scrollToItems(at: [IndexPath(item: 0, section: 0)], scrollPosition: .top)
+            }
             
             var finalText: String = ""
             finalText += "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW"
@@ -254,6 +295,46 @@ class ViewerViewController: NSViewController {
            let safeFile: File = FilesDB.shared.getFile(at: safeSelectedPhotoIndex.item) {
             
             NSWorkspace.shared.activateFileViewerSelecting([safeFile.getOriginalPath()])
+        }
+    }
+    
+    ///
+    /// Filters the files by the group of file extension and updates  the colors of the buttons.
+    ///
+    private func filterBy(_ extensionGroup: FileExtensionGroup) {
+        guard let _ = FilesDB.shared.selectedPath else { return }
+        
+        selectedPhotoIndex = nil
+        
+        switch extensionGroup {
+        case .all:
+            FilesDB.shared.filterFilesBy(.all)
+            
+            displayAllFilesButton.contentTintColor = NSColor.black
+            displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+        case .photos:
+            FilesDB.shared.filterFilesBy(.photos)
+            
+            displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayOnlyPhotosButton.contentTintColor = NSColor.black
+            displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+        case .videos:
+            FilesDB.shared.filterFilesBy(.videos)
+            
+            displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayOnlyVideosButton.contentTintColor = NSColor.black
+            displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+        case .others:
+            FilesDB.shared.filterFilesBy(.others)
+            
+            displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            displayRestOfFilesButton.contentTintColor = NSColor.black
         }
     }
     
@@ -284,7 +365,7 @@ extension ViewerViewController: NSCollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        return FilesDB.shared.files.count
+        return FilesDB.shared.filteredFiles.count
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {

@@ -8,6 +8,13 @@
 import Foundation
 import AppKit
 
+public enum FileExtensionGroup {
+    case all
+    case photos
+    case videos
+    case others
+}
+
 struct File {
     
     // MARK: - Properties

@@ -36,6 +36,7 @@ final class FilesDB {
     public var getFilesInsideFolders: Bool = true
     
     public var files: [File] = []
+    public var filteredFiles: [File] = []
     
     private var RAWPhotos: Int = 0
     private var JPEGPhotos: Int = 0
@@ -50,7 +51,7 @@ final class FilesDB {
     
     public func getFile(at: Int) -> File? {
         if files.count > at {
-            return files[at]
+            return filteredFiles[at]
         } else {
             return nil
         }
@@ -58,6 +59,7 @@ final class FilesDB {
     
     public func eraseAll() {
         files = []
+        filteredFiles = []
     }
     
     public func count(extensionType: File.ExtensionType) -> Int {
@@ -122,6 +124,8 @@ final class FilesDB {
                 // Append the new File to the files array of the PhotosDB.
                 self.files.append(file)
             }
+            
+            self.filteredFiles = self.files
             
             NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
         }
@@ -219,6 +223,77 @@ final class FilesDB {
         }
         
         return newThumbnailImage
+    }
+    
+    ///
+    /// Filters the files by an extension group.
+    ///
+    public func filterFilesBy(_ group: FileExtensionGroup) {
+        filteredFiles = []
+        
+        switch group {
+        case .all:
+            filteredFiles = files
+        case .photos:
+            filteredFiles = files.filter( {
+                $0.getName().contains("arw") ||
+                $0.getName().contains("ARW") ||
+                $0.getName().contains("nef") ||
+                $0.getName().contains("NEF") ||
+                $0.getName().contains("cr2") ||
+                $0.getName().contains("CR2") ||
+                $0.getName().contains("heic") ||
+                $0.getName().contains("HEIC") ||
+                $0.getName().contains("jpg") ||
+                $0.getName().contains("JPG") ||
+                $0.getName().contains("jpeg") ||
+                $0.getName().contains("JPEG") ||
+                $0.getName().contains("png") ||
+                $0.getName().contains("PNG") ||
+                $0.getName().contains("bmp") ||
+                $0.getName().contains("BMP") ||
+                $0.getName().contains("webp") ||
+                $0.getName().contains("WEBP")
+            } )
+        case .videos:
+            filteredFiles = files.filter( {
+                $0.getName().contains("mp4") ||
+                $0.getName().contains("MP4") ||
+                $0.getName().contains("mov") ||
+                $0.getName().contains("MOV") ||
+                $0.getName().contains("gif") ||
+                $0.getName().contains("GIF")
+            } )
+        case .others:
+            filteredFiles = files.filter( {
+                !$0.getName().contains("arw") &&
+                !$0.getName().contains("ARW") &&
+                !$0.getName().contains("nef") &&
+                !$0.getName().contains("NEF") &&
+                !$0.getName().contains("cr2") &&
+                !$0.getName().contains("CR2") &&
+                !$0.getName().contains("heic") &&
+                !$0.getName().contains("HEIC") &&
+                !$0.getName().contains("jpg") &&
+                !$0.getName().contains("JPG") &&
+                !$0.getName().contains("jpeg") &&
+                !$0.getName().contains("JPEG") &&
+                !$0.getName().contains("png") &&
+                !$0.getName().contains("PNG") &&
+                !$0.getName().contains("bmp") &&
+                !$0.getName().contains("BMP") &&
+                !$0.getName().contains("webp") &&
+                !$0.getName().contains("WEBP") &&
+                !$0.getName().contains("mp4") &&
+                !$0.getName().contains("MP4") &&
+                !$0.getName().contains("mov") &&
+                !$0.getName().contains("MOV") &&
+                !$0.getName().contains("gif") &&
+                !$0.getName().contains("GIF")
+            } )
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
     }
     
 }
