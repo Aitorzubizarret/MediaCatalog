@@ -273,6 +273,8 @@ class ViewerViewController: NSViewController {
             var finalText: String = ""
             finalText += "\(FilesDB.shared.count(extensionType: .RAWPhoto)) RAW"
             finalText += "\n"
+            finalText += "\(FilesDB.shared.count(extensionType: .HEICPhoto)) HEIC"
+            finalText += "\n"
             finalText += "\(FilesDB.shared.count(extensionType: .JPEGPhoto)) JPG"
             finalText += "\n"
             finalText += "\(FilesDB.shared.count(extensionType: .PNGPhoto)) PNG"

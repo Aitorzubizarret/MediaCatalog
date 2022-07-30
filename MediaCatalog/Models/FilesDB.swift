@@ -22,6 +22,7 @@ final class FilesDB {
             files = []
             
             RAWPhotos = 0
+            HEICPhotos = 0
             JPEGPhotos = 0
             PNGPhotos = 0
             GIFPhotos = 0
@@ -39,6 +40,7 @@ final class FilesDB {
     public var filteredFiles: [File] = []
     
     private var RAWPhotos: Int = 0
+    private var HEICPhotos: Int = 0
     private var JPEGPhotos: Int = 0
     private var PNGPhotos: Int = 0
     private var GIFPhotos: Int = 0
@@ -66,6 +68,8 @@ final class FilesDB {
         switch extensionType {
         case .RAWPhoto:
             return RAWPhotos
+        case .HEICPhoto:
+            return HEICPhotos
         case .JPEGPhoto:
             return JPEGPhotos
         case .PNGPhoto:
@@ -102,6 +106,10 @@ final class FilesDB {
                 case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
                     self.RAWPhotos += 1
                     fileThumbnailImage = self.createThumbnail(fileURL: fileURL)
+                case "heic", "HEIC":
+                    self.HEICPhotos += 1
+                    // FIXME: This still doesn't work :-(
+                    //fileThumbnailImage = self.convertHEICToJPG(fileURL: fileURL)
                 case "jpg", "JPG", "jpeg", "JPEG":
                     self.JPEGPhotos += 1
                     // Maybe later we are going to create thumbnails for the big JPG photos.
@@ -224,6 +232,33 @@ final class FilesDB {
         
         return newThumbnailImage
     }
+    
+    // FIXME: This still doesn't work :-(
+    ///
+    /// Converts HEIC photos into JPG.
+    ///
+//    private func convertHEICToJPG(fileURL: URL) -> NSImage {
+//        // NSImage.
+//        var imageConverted: NSImage = NSImage()
+//
+//        do {
+//            // Data as CFData
+//            let data: CFData = try Data(contentsOf: fileURL) as CFData
+//
+//            // CGImageSource
+//            if let imageSource = CGImageSourceCreateWithData(data, nil) {
+//
+//                // CGImage
+//                if let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) {
+//                    imageConverted = NSImage(cgImage: cgImage, size: .init(width: cgImage.width, height: cgImage.height))
+//                }
+//            }
+//        } catch let error {
+//            print("Error \(error)")
+//        }
+//
+//        return imageConverted
+//    }
     
     ///
     /// Filters the files by an extension group.

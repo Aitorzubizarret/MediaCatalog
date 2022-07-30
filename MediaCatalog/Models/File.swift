@@ -25,6 +25,7 @@ struct File {
     
     public enum ExtensionType {
         case RAWPhoto
+        case HEICPhoto
         case JPEGPhoto
         case PNGPhoto
         case GIFPhoto
