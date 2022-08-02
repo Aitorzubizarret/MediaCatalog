@@ -7,12 +7,18 @@
 
 import Foundation
 import AppKit
+import SQLite3
 
 final class FilesDB {
     
     // MARK: - Properties
     
     static var shared = FilesDB() // Singleton.
+    
+    /// SQLite
+    var db: OpaquePointer?
+    var dbFileName: String = "MediaCatalogDB.sqlite"
+    var dbFilePath: URL?
     
     public var selectedPath: URL? {
         didSet {
@@ -329,6 +335,108 @@ final class FilesDB {
         }
         
         NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+    }
+    
+}
+
+// MARK: - SQLite
+
+extension FilesDB {
+    
+    ///
+    /// Creates a Catalog (SQLite) file.
+    ///
+    func createCatalogFile(window: NSWindow?) {
+        guard let safeWindow = window else { return }
+        
+        // NS Open Panel.
+        let openPanel = NSOpenPanel()
+        openPanel.title = "Select the folder where you want to save the Catalog file."
+        openPanel.canChooseFiles = false
+        openPanel.canChooseDirectories = true
+        openPanel.canCreateDirectories = true
+        openPanel.allowsMultipleSelection = false
+        
+        // File Manager.
+        let fileManager = FileManager.default
+        
+        openPanel.beginSheetModal(for: safeWindow) { result in
+            if result == NSApplication.ModalResponse.OK {
+                if let safePath: URL = openPanel.urls.first {
+                    let directory: String = safePath.path
+                    let filePath: String = directory + "/" + "\(self.dbFileName)"
+                    
+                    if fileManager.fileExists(atPath: filePath) {
+                        // FIXME: - Show a message to the user.
+                        print("Error: There is already a Catalog file in the selected folder.")
+                    } else {
+                        fileManager.createFile(atPath: directory, contents: nil)
+                        self.createCatalogStructure(filePath: filePath)
+                    }
+                }
+            }
+        }
+    }
+    
+    ///
+    /// Open an existing Catalog (SQLite) file.
+    ///
+    func openCatalogFile(window: NSWindow?) {
+        guard let safeWindow = window else { return }
+        
+        // NS Open Panel.
+        let openPanel = NSOpenPanel()
+        openPanel.canChooseFiles = false
+        openPanel.canChooseDirectories = true
+        openPanel.canCreateDirectories = false
+        openPanel.allowsMultipleSelection = false
+        
+        // File Manager.
+        let fileManager = FileManager.default
+        
+        openPanel.beginSheetModal(for: safeWindow) { result in
+            if result == NSApplication.ModalResponse.OK {
+                if let safePath: URL = openPanel.urls.first {
+                    let directory: String = safePath.path
+                    let filePath: String = directory + "/" + "\(self.dbFileName)"
+                    
+                    if !fileManager.fileExists(atPath: filePath) {
+                        // FIXME: - Show a message to the user.
+                        print("Error: There is NO Catalog file in the selected folder.")
+                    } else {
+                        print("Success: Catalog file found.")
+                    }
+                }
+            }
+        }
+    }
+    
+    ///
+    /// Create the Catalog SQLite DB Structure.
+    ///
+    func createCatalogStructure(filePath: String) {
+        if sqlite3_open(filePath, &db) == SQLITE_OK {
+            print("Catalog SQLITE open")
+        } else {
+            print("Error opening the file")
+            let errmsg = String(cString: sqlite3_errmsg(db)!)
+            print("error creating table: \(errmsg)")
+            return
+        }
+        
+        let createFilesTableQuery = """
+        CREATE TABLE IF NOT EXISTS Files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            path TEXT,
+            name TEXT,
+            thumbnail BLOB
+        )
+        """
+        
+        if sqlite3_exec(db, createFilesTableQuery, nil, nil, nil) != SQLITE_OK {
+            let errmsg = String(cString: sqlite3_errmsg(db)!)
+            print("error creating table: \(errmsg)")
+        }
     }
     
 }

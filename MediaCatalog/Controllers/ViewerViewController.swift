@@ -15,7 +15,17 @@ class ViewerViewController: NSViewController {
     
     @IBOutlet weak var sideMenuView: NSView!
     
-    @IBOutlet weak var importFolderButton: NSButtonCell!
+    @IBOutlet weak var createDBButton: NSButton!
+    @IBAction func createDBButtonTapped(_ sender: Any) {
+        FilesDB.shared.createCatalogFile(window: self.view.window)
+    }
+    
+    @IBOutlet weak var openDBButton: NSButton!
+    @IBAction func openDBButtonTapped(_ sender: Any) {
+        FilesDB.shared.openCatalogFile(window: self.view.window)
+    }
+    
+    @IBOutlet weak var importFolderButton: NSButton!
     @IBAction func importFolderButtonTapped(_ sender: Any) {
         loadImages()
     }
@@ -149,6 +159,9 @@ class ViewerViewController: NSViewController {
         contentView.layer?.backgroundColor = NSColor.MediaCatalog.lightGrey?.cgColor
         
         // Buttons.
+        createDBButton.isHidden = false
+        importFolderButton.isHidden = true
+        
         closeSelectedPhotoViewerButton.wantsLayer = true
         closeSelectedPhotoViewerButton.layer?.backgroundColor = NSColor.MediaCatalog.darkGrey?.cgColor
         closeSelectedPhotoViewerButton.contentTintColor = NSColor.white

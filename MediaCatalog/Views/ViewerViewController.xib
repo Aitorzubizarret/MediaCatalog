@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="closeSelectedPhotoViewerButton" destination="pbo-Bm-nkN" id="Ddx-tM-bsk"/>
                 <outlet property="contentView" destination="lWs-3q-lUN" id="I44-gA-LjG"/>
+                <outlet property="createDBButton" destination="XIm-oU-Ov1" id="Shb-vU-mf7"/>
                 <outlet property="detectFacesButton" destination="QeN-e6-Dkl" id="jPS-P4-pC6"/>
                 <outlet property="displayAllFilesButton" destination="pzz-5Z-y8j" id="I1K-of-cH1"/>
                 <outlet property="displayOnlyPhotosButton" destination="fve-pi-TR7" id="tH2-Jh-Fta"/>
@@ -17,8 +18,9 @@
                 <outlet property="galleryCollectionView" destination="tLJ-h7-9xM" id="PuF-Kc-gmC"/>
                 <outlet property="galleryCollectionViewScrollView" destination="Cb3-on-p7N" id="cyw-gk-9Sk"/>
                 <outlet property="imageView" destination="bbb-0J-N2P" id="ruD-vP-quy"/>
-                <outlet property="importFolderButton" destination="VfI-v7-Lwa" id="TCY-HH-ffY"/>
+                <outlet property="importFolderButton" destination="7ah-dY-Oz1" id="FgY-aL-Mfg"/>
                 <outlet property="importedFilesTypesLabel" destination="ufh-on-Stn" id="cp4-Qb-OSZ"/>
+                <outlet property="openDBButton" destination="89b-Ze-Ny7" id="8Am-6Q-PvL"/>
                 <outlet property="selectedPhotoViewerView" destination="piP-zx-wfA" id="q0u-xH-32i"/>
                 <outlet property="showFileInFinderButton" destination="Qqh-2g-ylQ" id="QCG-jO-Eod"/>
                 <outlet property="sideMenuView" destination="QkP-80-bxS" id="DeA-MS-1X6"/>
@@ -48,21 +50,50 @@
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
-                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PgU-0F-UGm">
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XIm-oU-Ov1">
                             <rect key="frame" x="43" y="495" width="134" height="32"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="120" id="DlG-kQ-qIf"/>
+                                <constraint firstAttribute="height" constant="20" id="6FF-5L-uhp"/>
+                                <constraint firstAttribute="width" constant="120" id="ac7-dq-sxB"/>
                             </constraints>
-                            <buttonCell key="cell" type="push" title="Import folder ..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="VfI-v7-Lwa">
+                            <buttonCell key="cell" type="push" title="Create Catalog" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="15F-Hf-Ira">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
-                                <connections>
-                                    <action selector="importFolderButtonTapped:" target="-2" id="eqE-2W-3as"/>
-                                </connections>
                             </buttonCell>
+                            <connections>
+                                <action selector="createDBButtonTapped:" target="-2" id="2ER-UF-ADb"/>
+                            </connections>
+                        </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="89b-Ze-Ny7">
+                            <rect key="frame" x="43" y="455" width="134" height="32"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="120" id="Svm-Q3-ARZ"/>
+                                <constraint firstAttribute="height" constant="20" id="ox5-JE-bNI"/>
+                            </constraints>
+                            <buttonCell key="cell" type="push" title="Open Catalog" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s9G-XW-7Ry">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="openDBButtonTapped:" target="-2" id="O70-nX-ojh"/>
+                            </connections>
+                        </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7ah-dY-Oz1">
+                            <rect key="frame" x="43" y="415" width="134" height="32"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="20" id="dO2-LY-rZ9"/>
+                                <constraint firstAttribute="width" constant="120" id="uF2-fG-vzz"/>
+                            </constraints>
+                            <buttonCell key="cell" type="push" title="Import folder" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ltx-E3-jEE">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="importFolderButtonTapped:" target="-2" id="VEG-7A-vCA"/>
+                            </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QeN-e6-Dkl">
-                            <rect key="frame" x="43" y="455" width="134" height="32"/>
+                            <rect key="frame" x="43" y="375" width="134" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="VR5-Ag-epj"/>
                             </constraints>
@@ -75,7 +106,7 @@
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qqh-2g-ylQ">
-                            <rect key="frame" x="43" y="415" width="134" height="32"/>
+                            <rect key="frame" x="43" y="335" width="134" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="120" id="LZ5-aw-CSj"/>
                             </constraints>
@@ -101,19 +132,23 @@
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="mob-LP-Vui" secondAttribute="trailing" id="9j5-7T-jA5"/>
-                        <constraint firstItem="PgU-0F-UGm" firstAttribute="top" secondItem="mob-LP-Vui" secondAttribute="bottom" constant="20" id="Fp0-OI-bew"/>
+                        <constraint firstItem="7ah-dY-Oz1" firstAttribute="top" secondItem="89b-Ze-Ny7" secondAttribute="bottom" constant="20" id="HXS-oK-O07"/>
                         <constraint firstAttribute="trailing" secondItem="ufh-on-Stn" secondAttribute="trailing" constant="20" id="Hyb-eZ-ZDE"/>
+                        <constraint firstItem="XIm-oU-Ov1" firstAttribute="top" secondItem="mob-LP-Vui" secondAttribute="bottom" constant="20" id="Jqp-0u-rox"/>
                         <constraint firstItem="ufh-on-Stn" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="PMG-Ng-GNs"/>
                         <constraint firstAttribute="width" constant="220" id="R1w-kB-3K6"/>
+                        <constraint firstItem="89b-Ze-Ny7" firstAttribute="top" secondItem="XIm-oU-Ov1" secondAttribute="bottom" constant="20" id="TAv-9k-9yn"/>
                         <constraint firstItem="Qqh-2g-ylQ" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="UfU-UP-uCc"/>
                         <constraint firstItem="ufh-on-Stn" firstAttribute="leading" secondItem="QkP-80-bxS" secondAttribute="leading" constant="20" id="fwZ-nL-XmZ"/>
+                        <constraint firstItem="89b-Ze-Ny7" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="gI0-xd-VN8"/>
                         <constraint firstAttribute="bottom" secondItem="ufh-on-Stn" secondAttribute="bottom" constant="20" id="gg7-hZ-Yfj"/>
-                        <constraint firstItem="QeN-e6-Dkl" firstAttribute="top" secondItem="PgU-0F-UGm" secondAttribute="bottom" constant="20" id="hbx-xv-EKR"/>
+                        <constraint firstItem="QeN-e6-Dkl" firstAttribute="top" secondItem="7ah-dY-Oz1" secondAttribute="bottom" constant="20" id="jeW-ee-iol"/>
                         <constraint firstItem="Qqh-2g-ylQ" firstAttribute="top" secondItem="QeN-e6-Dkl" secondAttribute="bottom" constant="20" id="oOc-bz-K7L"/>
-                        <constraint firstItem="PgU-0F-UGm" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="q3J-X1-vfL"/>
                         <constraint firstItem="mob-LP-Vui" firstAttribute="leading" secondItem="QkP-80-bxS" secondAttribute="leading" id="qCd-pa-0E6"/>
+                        <constraint firstItem="XIm-oU-Ov1" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="rFr-cP-aek"/>
                         <constraint firstItem="QeN-e6-Dkl" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="tRB-fU-uWS"/>
                         <constraint firstItem="mob-LP-Vui" firstAttribute="top" secondItem="QkP-80-bxS" secondAttribute="top" constant="40" id="uId-mH-oKW"/>
+                        <constraint firstItem="7ah-dY-Oz1" firstAttribute="centerX" secondItem="QkP-80-bxS" secondAttribute="centerX" id="w3C-Wf-mpR"/>
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="lWs-3q-lUN">
