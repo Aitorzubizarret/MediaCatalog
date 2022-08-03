@@ -423,16 +423,16 @@ extension ViewerViewController {
         photoOnDisplay = true
         
         // File thumbnail.
-        switch safeFile.getOriginalPath().pathExtension {
-        case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
+        switch safeFile.getOriginalPath().pathExtension.lowercased() {
+        case "arw", "nef", "cr2":
             if let safePath = safeFile.getThumbnailImagePath() {
                 imageView.loadFrom(localPath: safePath)
             } else {
                 imageView.image = NSImage()
             }
-        case "jpg", "JPG", "jpeg", "JPEG":
+        case "jpg", "jpeg":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
-        case "png", "PNG":
+        case "png":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
         default:
             imageView.image = NSImage(named: "unknownFileExtension")
@@ -451,16 +451,16 @@ extension ViewerViewController {
         faceRectangleLayer.sublayers?.removeAll()
         
         // File thumbnail.
-        switch safeFile.getOriginalPath().pathExtension {
-        case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
+        switch safeFile.getOriginalPath().pathExtension.lowercased() {
+        case "arw", "nef", "cr2":
             if let safePath = safeFile.getThumbnailImagePath() {
                 imageView.loadFrom(localPath: safePath)
             } else {
                 imageView.image = NSImage()
             }
-        case "jpg", "JPG", "jpeg", "JPEG":
+        case "jpg", "jpeg":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
-        case "png", "PNG":
+        case "png":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
         default:
             imageView.image = NSImage(named: "unknownFileExtension")

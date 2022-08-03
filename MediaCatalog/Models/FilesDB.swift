@@ -111,35 +111,35 @@ final class FilesDB {
                 }
                 
                 // File type/extension.
-                let fileType: String = fileURL.pathExtension
+                let fileType: String = fileURL.pathExtension.lowercased()
                 
                 // Thumbnail image path (if created).
                 var thumbnailPath: URL?
                 
                 // Check file extension.
-                switch fileURL.pathExtension {
-                case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
+                switch fileURL.pathExtension.lowercased() {
+                case "arw", "nef", "cr2":
                     self.RAWPhotos += 1
                     // Create the thumbnail image.
                     let fileThumbnailImage: NSImage = self.createThumbnail(fileURL: fileURL)
                     
                     // Save the Thumbnail image locally.
                     thumbnailPath = self.saveThumbnailLocally(name: fileName, image: fileThumbnailImage)
-                case "heic", "HEIC":
+                case "heic":
                     self.HEICPhotos += 1
                     // FIXME: This still doesn't work :-(
                     //fileThumbnailImage = self.convertHEICToJPG(fileURL: fileURL)
-                case "jpg", "JPG", "jpeg", "JPEG":
+                case "jpg", "jpeg":
                     self.JPEGPhotos += 1
                     // Maybe later we are going to create thumbnails for the big JPG photos.
-                case "png", "PNG":
+                case "png":
                     self.PNGPhotos += 1
                     // Maybe later we are going to create thumbnails for the big PNG photos.
-                case "gif", "GIF":
+                case "gif":
                     self.GIFPhotos += 1
-                case "bmp", "BMP":
+                case "bmp":
                     self.BMPPhotos += 1
-                case "webp", "WEBP":
+                case "webp":
                     self.WEBPPhotos += 1
                 default:
                     print("Other extension \(fileURL.pathExtension)")

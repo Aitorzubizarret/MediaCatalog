@@ -21,16 +21,16 @@ class ThumbnailCollectionViewItem: NSCollectionViewItem {
             guard let safeFile = file else { return }
             
             // File thumbnail.
-            switch safeFile.getOriginalPath().pathExtension {
-            case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
+            switch safeFile.getOriginalPath().pathExtension.lowercased() {
+            case "arw", "nef", "cr2":
                 if let thumbnailPath = safeFile.getThumbnailImagePath() {
                     thumbnailImageView.loadFrom(localPath: thumbnailPath)
                 } else {
                     thumbnailImageView.image = NSImage()
                 }
-            case "jpg", "JPG", "jpeg", "JPEG":
+            case "jpg", "jpeg":
                 thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
-            case "png", "PNG":
+            case "png":
                 thumbnailImageView.loadFrom(localPath: safeFile.getOriginalPath())
             default:
                 thumbnailImageView.image = NSImage(named: "unknownFileExtension")
