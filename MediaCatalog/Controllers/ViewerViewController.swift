@@ -160,7 +160,7 @@ class ViewerViewController: NSViewController {
         
         // Buttons.
         createDBButton.isHidden = false
-        importFolderButton.isHidden = true
+        importFolderButton.isHidden = false
         
         closeSelectedPhotoViewerButton.wantsLayer = true
         closeSelectedPhotoViewerButton.layer?.backgroundColor = NSColor.MediaCatalog.darkGrey?.cgColor
@@ -425,7 +425,11 @@ extension ViewerViewController {
         // File thumbnail.
         switch safeFile.getOriginalPath().pathExtension {
         case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
-            imageView.image = safeFile.getThumbnailImage()
+            if let safePath = safeFile.getThumbnailImagePath() {
+                imageView.loadFrom(localPath: safePath)
+            } else {
+                imageView.image = NSImage()
+            }
         case "jpg", "JPG", "jpeg", "JPEG":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
         case "png", "PNG":
@@ -449,7 +453,11 @@ extension ViewerViewController {
         // File thumbnail.
         switch safeFile.getOriginalPath().pathExtension {
         case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
-            imageView.image = safeFile.getThumbnailImage()
+            if let safePath = safeFile.getThumbnailImagePath() {
+                imageView.loadFrom(localPath: safePath)
+            } else {
+                imageView.image = NSImage()
+            }
         case "jpg", "JPG", "jpeg", "JPEG":
             imageView.loadFrom(localPath: safeFile.getOriginalPath())
         case "png", "PNG":

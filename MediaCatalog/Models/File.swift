@@ -20,8 +20,9 @@ struct File {
     // MARK: - Properties
     
     private let name: String
-    private let thumbnailImage: NSImage
+    private let type: String
     private let originalPath: URL
+    private let thumbnailPath: URL?
     
     public enum ExtensionType {
         case RAWPhoto
@@ -52,22 +53,27 @@ struct File {
     
     // MARK: - Methods
     
-    init(name: String, thumbnailImage: NSImage, originalPath: URL) {
+    init(name: String, type: String, originalPath: URL, thumbnailPath: URL?) {
         self.name = name
-        self.thumbnailImage = thumbnailImage
+        self.type = type
         self.originalPath = originalPath
+        self.thumbnailPath = thumbnailPath
     }
     
     public func getName() -> String {
         return name
     }
     
-    public func getThumbnailImage() -> NSImage {
-        return thumbnailImage
+    public func getType() -> String {
+        return type
     }
     
     public func getOriginalPath() -> URL {
         return originalPath
+    }
+    
+    public func getThumbnailImagePath() -> URL? {
+        return thumbnailPath
     }
     
 }

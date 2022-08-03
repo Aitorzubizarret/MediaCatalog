@@ -17,7 +17,9 @@ final class FilesDB {
     
     /// SQLite
     var db: OpaquePointer?
-    var dbFileName: String = "MediaCatalogDB.sqlite"
+    let dbFileName: String = "MediaCatalogDB.sqlite"
+    let thumbnailsFolderName = "MediaCatalogThumbnails"
+    var selectedCatalogFolder: String = ""
     var dbFilePath: URL?
     
     public var selectedPath: URL? {
@@ -101,17 +103,28 @@ final class FilesDB {
                 // File name.
                 var fileName: String = ""
                 if let safeFileName = fileURL.pathComponents.last {
-                    fileName = safeFileName
+                    let nameComponents = safeFileName.components(separatedBy: ".")
+                    let cleanNameComponents = nameComponents.dropLast()
+                    for component in cleanNameComponents {
+                        fileName += component
+                    }
                 }
                 
-                // File thumbnail image.
-                var fileThumbnailImage: NSImage = NSImage()
+                // File type/extension.
+                let fileType: String = fileURL.pathExtension
+                
+                // Thumbnail image path (if created).
+                var thumbnailPath: URL?
                 
                 // Check file extension.
                 switch fileURL.pathExtension {
                 case "arw", "ARW", "nef", "NEF", "cr2", "CR2":
                     self.RAWPhotos += 1
-                    fileThumbnailImage = self.createThumbnail(fileURL: fileURL)
+                    // Create the thumbnail image.
+                    let fileThumbnailImage: NSImage = self.createThumbnail(fileURL: fileURL)
+                    
+                    // Save the Thumbnail image locally.
+                    thumbnailPath = self.saveThumbnailLocally(name: fileName, image: fileThumbnailImage)
                 case "heic", "HEIC":
                     self.HEICPhotos += 1
                     // FIXME: This still doesn't work :-(
@@ -133,10 +146,13 @@ final class FilesDB {
                 }
                 
                 // Create the File element.
-                let file = File(name: fileName, thumbnailImage: fileThumbnailImage, originalPath: fileURL)
+                let file = File(name: fileName, type: fileType, originalPath: fileURL, thumbnailPath: thumbnailPath)
                 
                 // Append the new File to the files array of the PhotosDB.
                 self.files.append(file)
+                
+                // Safe File object in SQLite DB.
+                self.saveFileInDB(file: file)
             }
             
             self.filteredFiles = self.files
@@ -237,6 +253,26 @@ final class FilesDB {
         }
         
         return newThumbnailImage
+    }
+    
+    ///
+    /// Save the thumbnail of an image locally.
+    ///
+    private func saveThumbnailLocally(name: String, image: NSImage) -> URL? {
+        guard let url: URL = URL(string: "file://\(selectedCatalogFolder)/\(thumbnailsFolderName)/\(name).jpg") else { return nil }
+        
+        if let ci = image.cgImage(forProposedRect: nil, context: nil, hints: nil).map({ CIImage(cgImage: $0) }),
+           let jpg = CIContext().jpegRepresentation(of: ci, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!) {
+            do {
+                try jpg.write(to: url)
+                return url
+            } catch let error {
+                print("Error saving image. \(error.localizedDescription)")
+                return nil
+            }
+        } else {
+            return nil
+        }
     }
     
     // FIXME: This still doesn't work :-(
@@ -363,15 +399,24 @@ extension FilesDB {
         openPanel.beginSheetModal(for: safeWindow) { result in
             if result == NSApplication.ModalResponse.OK {
                 if let safePath: URL = openPanel.urls.first {
-                    let directory: String = safePath.path
-                    let filePath: String = directory + "/" + "\(self.dbFileName)"
+                    let filePath: String = safePath.path + "/" + "\(self.dbFileName)"
                     
+                    // Check SQLite file exists before creating one.
                     if fileManager.fileExists(atPath: filePath) {
                         // FIXME: - Show a message to the user.
                         print("Error: There is already a Catalog file in the selected folder.")
                     } else {
-                        fileManager.createFile(atPath: directory, contents: nil)
+                        // SQLite file.
+                        fileManager.createFile(atPath: safePath.path, contents: nil)
                         self.createCatalogStructure(filePath: filePath)
+                    }
+                    
+                    // Check Thumbnails folder exists before creating one.
+                    let folderPath: String = safePath.path + "/" + self.thumbnailsFolderName
+                    do {
+                        try fileManager.createDirectory(atPath: folderPath, withIntermediateDirectories: true)
+                    } catch let error {
+                        print("Error creating folder \(error)")
                     }
                 }
             }
@@ -397,14 +442,20 @@ extension FilesDB {
         openPanel.beginSheetModal(for: safeWindow) { result in
             if result == NSApplication.ModalResponse.OK {
                 if let safePath: URL = openPanel.urls.first {
-                    let directory: String = safePath.path
-                    let filePath: String = directory + "/" + "\(self.dbFileName)"
+                    self.selectedCatalogFolder = safePath.path
+                    let filePath: String = safePath.path + "/" + "\(self.dbFileName)"
                     
+                    // Check SQLite file.
                     if !fileManager.fileExists(atPath: filePath) {
                         // FIXME: - Show a message to the user.
                         print("Error: There is NO Catalog file in the selected folder.")
                     } else {
                         print("Success: Catalog file found.")
+                        if sqlite3_open(filePath, &self.db) == SQLITE_OK {
+                            print("Successfully opened connection to database")
+                        } else {
+                            print("Unable to open database.")
+                        }
                     }
                 }
             }
@@ -426,10 +477,11 @@ extension FilesDB {
         
         let createFilesTableQuery = """
         CREATE TABLE IF NOT EXISTS Files (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            path TEXT,
-            name TEXT,
-            thumbnail BLOB
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Name TEXT,
+            Type TEXT,
+            OriginalPath TEXT,
+            ThumbnailPath TEXT
         )
         """
         
@@ -437,6 +489,42 @@ extension FilesDB {
             let errmsg = String(cString: sqlite3_errmsg(db)!)
             print("error creating table: \(errmsg)")
         }
+    }
+    
+    ///
+    ///
+    ///
+    private func saveFileInDB(file: File) {
+        guard let safeDB = db else { return }
+
+        var insertStatement: OpaquePointer?
+        let insertStatementString = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
+
+        if sqlite3_prepare_v2(self.db, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
+            // Get values.
+            let name: NSString = file.getName() as NSString
+            let type: NSString = file.getType() as NSString
+            let originalPath: NSString = file.getOriginalPath().path as NSString
+            var thumbnailPath: NSString = ""
+            if let safeThumbnailPathURL: URL = file.getThumbnailImagePath() {
+                thumbnailPath = safeThumbnailPathURL.path as NSString
+            }
+            
+            sqlite3_bind_text(insertStatement, 1, name.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 2, type.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 3, originalPath.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 4, thumbnailPath.utf8String, -1, nil)
+
+            if sqlite3_step(insertStatement) == SQLITE_DONE {
+                print("Successfully inserted")
+            } else {
+                print("Error inserting")
+            }
+        } else {
+            print("InsertStatement is not prepared")
+        }
+
+        sqlite3_finalize(insertStatement)
     }
     
 }
