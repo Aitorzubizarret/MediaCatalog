@@ -313,60 +313,36 @@ final class FilesDB {
             filteredFiles = files
         case .photos:
             filteredFiles = files.filter( {
-                $0.getName().contains("arw") ||
-                $0.getName().contains("ARW") ||
-                $0.getName().contains("nef") ||
-                $0.getName().contains("NEF") ||
-                $0.getName().contains("cr2") ||
-                $0.getName().contains("CR2") ||
-                $0.getName().contains("heic") ||
-                $0.getName().contains("HEIC") ||
-                $0.getName().contains("jpg") ||
-                $0.getName().contains("JPG") ||
-                $0.getName().contains("jpeg") ||
-                $0.getName().contains("JPEG") ||
-                $0.getName().contains("png") ||
-                $0.getName().contains("PNG") ||
-                $0.getName().contains("bmp") ||
-                $0.getName().contains("BMP") ||
-                $0.getName().contains("webp") ||
-                $0.getName().contains("WEBP")
+                $0.getType().contains("arw") ||
+                $0.getType().contains("nef") ||
+                $0.getType().contains("cr2") ||
+                $0.getType().contains("heic") ||
+                $0.getType().contains("jpg") ||
+                $0.getType().contains("jpeg") ||
+                $0.getType().contains("png") ||
+                $0.getType().contains("bmp") ||
+                $0.getType().contains("webp")
             } )
         case .videos:
             filteredFiles = files.filter( {
-                $0.getName().contains("mp4") ||
-                $0.getName().contains("MP4") ||
-                $0.getName().contains("mov") ||
-                $0.getName().contains("MOV") ||
-                $0.getName().contains("gif") ||
-                $0.getName().contains("GIF")
+                $0.getType().contains("mp4") ||
+                $0.getType().contains("mov") ||
+                $0.getType().contains("gif")
             } )
         case .others:
             filteredFiles = files.filter( {
-                !$0.getName().contains("arw") &&
-                !$0.getName().contains("ARW") &&
-                !$0.getName().contains("nef") &&
-                !$0.getName().contains("NEF") &&
-                !$0.getName().contains("cr2") &&
-                !$0.getName().contains("CR2") &&
-                !$0.getName().contains("heic") &&
-                !$0.getName().contains("HEIC") &&
-                !$0.getName().contains("jpg") &&
-                !$0.getName().contains("JPG") &&
-                !$0.getName().contains("jpeg") &&
-                !$0.getName().contains("JPEG") &&
-                !$0.getName().contains("png") &&
-                !$0.getName().contains("PNG") &&
-                !$0.getName().contains("bmp") &&
-                !$0.getName().contains("BMP") &&
-                !$0.getName().contains("webp") &&
-                !$0.getName().contains("WEBP") &&
-                !$0.getName().contains("mp4") &&
-                !$0.getName().contains("MP4") &&
-                !$0.getName().contains("mov") &&
-                !$0.getName().contains("MOV") &&
-                !$0.getName().contains("gif") &&
-                !$0.getName().contains("GIF")
+                !$0.getType().contains("arw") &&
+                !$0.getType().contains("nef") &&
+                !$0.getType().contains("cr2") &&
+                !$0.getType().contains("heic") &&
+                !$0.getType().contains("jpg") &&
+                !$0.getType().contains("jpeg") &&
+                !$0.getType().contains("png") &&
+                !$0.getType().contains("bmp") &&
+                !$0.getType().contains("webp") &&
+                !$0.getType().contains("mp4") &&
+                !$0.getType().contains("mov") &&
+                !$0.getType().contains("gif")
             } )
         }
         

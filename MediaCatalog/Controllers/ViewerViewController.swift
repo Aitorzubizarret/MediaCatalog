@@ -280,12 +280,6 @@ class ViewerViewController: NSViewController {
             
             self.photoOnDisplay = false
             self.showFileInFinderButton.isHidden = false
-            
-            // Buttons.
-            self.displayAllFilesButton.contentTintColor = NSColor.black
-            self.displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
-            self.displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
-            self.displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
         }
     }
     
@@ -304,8 +298,6 @@ class ViewerViewController: NSViewController {
     /// Filters the files by the group of file extension and updates  the colors of the buttons.
     ///
     private func filterBy(_ extensionGroup: FileExtensionGroup) {
-        guard let _ = FilesDB.shared.selectedPath else { return }
-        
         selectedPhotoIndex = nil
         
         switch extensionGroup {
