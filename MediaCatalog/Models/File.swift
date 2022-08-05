@@ -19,6 +19,7 @@ struct File {
     
     // MARK: - Properties
     
+    private let id: Int
     private let name: String
     private let type: String
     private let originalPath: URL
@@ -53,11 +54,16 @@ struct File {
     
     // MARK: - Methods
     
-    init(name: String, type: String, originalPath: URL, thumbnailPath: URL?) {
+    init(id: Int, name: String, type: String, originalPath: URL, thumbnailPath: URL?) {
+        self.id = id
         self.name = name
         self.type = type
         self.originalPath = originalPath
         self.thumbnailPath = thumbnailPath
+    }
+    
+    public func getId() -> Int {
+        return id
     }
     
     public func getName() -> String {

@@ -25,7 +25,7 @@ class FileCollectionViewItem: NSCollectionViewItem {
     public var fileIndexPath: IndexPath? {
         didSet {
             guard let safeFileIndexPath = fileIndexPath,
-                  let file = FilesDB.shared.getFile(at: safeFileIndexPath.item) else { return }
+                  let file = FilesDB.shared.getFile(id: safeFileIndexPath.item) else { return }
             
             // File name.
             nameLabel.stringValue = file.getName()

@@ -15,6 +15,9 @@ final class FilesDB {
     
     static var shared = FilesDB() // Singleton.
     
+    /// Data
+    var amountOfFiles: Int = 0
+    
     /// SQLite
     var db: OpaquePointer?
     let dbFileName: String = "MediaCatalogDB.sqlite"
@@ -22,30 +25,7 @@ final class FilesDB {
     var selectedCatalogFolder: String = ""
     var dbFilePath: URL?
     
-    public var selectedPath: URL? {
-        didSet {
-            guard let safePath = selectedPath else { return }
-            
-            // Clear files array.
-            files = []
-            
-            RAWPhotos = 0
-            HEICPhotos = 0
-            JPEGPhotos = 0
-            PNGPhotos = 0
-            GIFPhotos = 0
-            BMPPhotos = 0
-            WEBPPhotos = 0
-            
-            let selectedFilesURLs: [URL] = contentsOf(folder: safePath)
-            
-            populateDB(filesURLs: selectedFilesURLs)
-        }
-    }
     public var getFilesInsideFolders: Bool = true
-    
-    public var files: [File] = []
-    public var filteredFiles: [File] = []
     
     private var RAWPhotos: Int = 0
     private var HEICPhotos: Int = 0
@@ -58,19 +38,6 @@ final class FilesDB {
     // MARK: - Methods
     
     init() {}
-    
-    public func getFile(at: Int) -> File? {
-        if files.count > at {
-            return filteredFiles[at]
-        } else {
-            return nil
-        }
-    }
-    
-    public func eraseAll() {
-        files = []
-        filteredFiles = []
-    }
     
     public func count(extensionType: File.ExtensionType) -> Int {
         switch extensionType {
@@ -89,7 +56,7 @@ final class FilesDB {
         case .WEBPPhoto:
             return WEBPPhotos
         case .all:
-            return files.count
+            return 0 //files.count
         }
     }
     
@@ -99,6 +66,8 @@ final class FilesDB {
     private func populateDB(filesURLs: [URL]) {
         DispatchQueue.global(qos: .userInitiated).async {
             for fileURL in filesURLs {
+                // File id.
+                let fileId: Int = 0
                 
                 // File name.
                 var fileName: String = ""
@@ -146,16 +115,13 @@ final class FilesDB {
                 }
                 
                 // Create the File element.
-                let file = File(name: fileName, type: fileType, originalPath: fileURL, thumbnailPath: thumbnailPath)
-                
-                // Append the new File to the files array of the PhotosDB.
-                self.files.append(file)
+                let file = File(id: fileId, name: fileName, type: fileType, originalPath: fileURL, thumbnailPath: thumbnailPath)
                 
                 // Safe File object in SQLite DB.
                 self.saveFileInDB(file: file)
             }
             
-            self.filteredFiles = self.files
+            self.getAmountOfFiles()
             
             NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
         }
@@ -305,49 +271,49 @@ final class FilesDB {
     ///
     /// Filters the files by an extension group.
     ///
-    public func filterFilesBy(_ group: FileExtensionGroup) {
-        filteredFiles = []
-        
-        switch group {
-        case .all:
-            filteredFiles = files
-        case .photos:
-            filteredFiles = files.filter( {
-                $0.getType().contains("arw") ||
-                $0.getType().contains("nef") ||
-                $0.getType().contains("cr2") ||
-                $0.getType().contains("heic") ||
-                $0.getType().contains("jpg") ||
-                $0.getType().contains("jpeg") ||
-                $0.getType().contains("png") ||
-                $0.getType().contains("bmp") ||
-                $0.getType().contains("webp")
-            } )
-        case .videos:
-            filteredFiles = files.filter( {
-                $0.getType().contains("mp4") ||
-                $0.getType().contains("mov") ||
-                $0.getType().contains("gif")
-            } )
-        case .others:
-            filteredFiles = files.filter( {
-                !$0.getType().contains("arw") &&
-                !$0.getType().contains("nef") &&
-                !$0.getType().contains("cr2") &&
-                !$0.getType().contains("heic") &&
-                !$0.getType().contains("jpg") &&
-                !$0.getType().contains("jpeg") &&
-                !$0.getType().contains("png") &&
-                !$0.getType().contains("bmp") &&
-                !$0.getType().contains("webp") &&
-                !$0.getType().contains("mp4") &&
-                !$0.getType().contains("mov") &&
-                !$0.getType().contains("gif")
-            } )
-        }
-        
-        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
-    }
+//    public func filterFilesBy(_ group: FileExtensionGroup) {
+//        filteredFiles = []
+//        
+//        switch group {
+//        case .all:
+//            filteredFiles = files
+//        case .photos:
+//            filteredFiles = files.filter( {
+//                $0.getType().contains("arw") ||
+//                $0.getType().contains("nef") ||
+//                $0.getType().contains("cr2") ||
+//                $0.getType().contains("heic") ||
+//                $0.getType().contains("jpg") ||
+//                $0.getType().contains("jpeg") ||
+//                $0.getType().contains("png") ||
+//                $0.getType().contains("bmp") ||
+//                $0.getType().contains("webp")
+//            } )
+//        case .videos:
+//            filteredFiles = files.filter( {
+//                $0.getType().contains("mp4") ||
+//                $0.getType().contains("mov") ||
+//                $0.getType().contains("gif")
+//            } )
+//        case .others:
+//            filteredFiles = files.filter( {
+//                !$0.getType().contains("arw") &&
+//                !$0.getType().contains("nef") &&
+//                !$0.getType().contains("cr2") &&
+//                !$0.getType().contains("heic") &&
+//                !$0.getType().contains("jpg") &&
+//                !$0.getType().contains("jpeg") &&
+//                !$0.getType().contains("png") &&
+//                !$0.getType().contains("bmp") &&
+//                !$0.getType().contains("webp") &&
+//                !$0.getType().contains("mp4") &&
+//                !$0.getType().contains("mov") &&
+//                !$0.getType().contains("gif")
+//            } )
+//        }
+//        
+//        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+//    }
     
 }
 
@@ -372,7 +338,17 @@ extension FilesDB {
                 if let safeUrl = openPanel.urls.first {
                     self.saveURLFromOpenPanel(url: safeUrl)
                     
-                    self.selectedPath = safeUrl
+                    self.RAWPhotos = 0
+                    self.HEICPhotos = 0
+                    self.JPEGPhotos = 0
+                    self.PNGPhotos = 0
+                    self.GIFPhotos = 0
+                    self.BMPPhotos = 0
+                    self.WEBPPhotos = 0
+                    
+                    let selectedFilesURLs: [URL] = self.contentsOf(folder: safeUrl)
+                    
+                    self.populateDB(filesURLs: selectedFilesURLs)
                 }
             }
         }
@@ -465,7 +441,10 @@ extension FilesDB {
                             
                             self.getURLFromOpenPanel()
                             
-                            self.selectAllFilesFromDB()
+                            self.getAmountOfFiles()
+                            
+                            // Notify to refresh the CollectionView.
+                            NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
                         } else {
                             print("Unable to open database.")
                         }
@@ -541,16 +520,92 @@ extension FilesDB {
     }
     
     ///
-    /// Read the SQLite.
+    /// Gets how many files the DB has.
     ///
-    private func selectAllFilesFromDB() {
+    func getAmountOfFiles() {
         var queryStatement: OpaquePointer?
-        var queryStatementString = "SELECT * FROM Files;"
+        let queryStatementString = "SELECT COUNT (*) FROM Files;"
         
         if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
-            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+            if sqlite3_step(queryStatement) == SQLITE_ROW {
+                let rowAmount: Int32 = sqlite3_column_int(queryStatement, 0)
+                self.amountOfFiles = Int(rowAmount)
+            }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("Query is not prepared: \(errorMessage)")
+        }
+    }
+    
+    ///
+    /// Read the SQLite.
+    ///
+//    private func selectAllFilesFromDB() {
+//        var queryStatement: OpaquePointer?
+//        let queryStatementString = "SELECT * FROM Files;"
+//
+//        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+//            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+//                // Id.
+//                let id = sqlite3_column_int(queryStatement, 0)
+//
+//                // Name.
+//                var name: String = ""
+//                if let nameUnsafe = sqlite3_column_text(queryStatement, 1) {
+//                    name = String(cString: nameUnsafe)
+//                }
+//
+//                // Type.
+//                var type: String = ""
+//                if let typeUnsafe = sqlite3_column_text(queryStatement, 2) {
+//                    type = String(cString: typeUnsafe)
+//                }
+//
+//                // Original Path.
+//                var originalPathString: String = "file://"
+//                if let originalpathStringUnsafe = sqlite3_column_text(queryStatement, 3) {
+//                    originalPathString += String(cString: originalpathStringUnsafe)
+//                    originalPathString = originalPathString.replacingOccurrences(of: " ", with: "%20")
+//                }
+//                let originalPath: URL = URL(string: originalPathString) ?? URL(string: "www.google.es")!
+//
+//                // Thumbnail Path.
+//                var thumbnailPathString: String = "file://"
+//                if let thumbnailPathStringUnsafe = sqlite3_column_text(queryStatement, 4) {
+//                    thumbnailPathString += String(cString: thumbnailPathStringUnsafe)
+//                    thumbnailPathString = thumbnailPathString.replacingOccurrences(of: " ", with: "%20")
+//                }
+//                let thumbnailPath: URL? = URL(string: thumbnailPathString)
+//
+//                // Create the File element.
+//                let file = File(id: Int(id), name: name, type: type, originalPath: originalPath, thumbnailPath: thumbnailPath)
+//            }
+//        } else {
+//            let errorMessage = String(cString: sqlite3_errmsg(db))
+//            print("Query is not prepared: \(errorMessage)")
+//        }
+//
+//        // Notify to refresh the CollectionView.
+//        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+//    }
+    
+    ///
+    /// Gets the file with the id
+    ///
+    func getFile(id: Int) -> File? {
+        
+        /// The Id received is always from IndexPath.item (CollectionView), and because SQLite DB starts from 1 instead of 0, we're adding 1.
+        let realId = id + 1
+        
+        var responseFile: File?
+        
+        var queryStatement: OpaquePointer?
+        let queryStatementString = "SELECT * from Files WHERE Id = \(realId) ;"
+        
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+            if sqlite3_step(queryStatement) == SQLITE_ROW {
                 // Id.
-                let id = sqlite3_column_int(queryStatement, 0)
+                let id: Int32 = sqlite3_column_int(queryStatement, 0)
                 
                 // Name.
                 var name: String = ""
@@ -581,21 +636,14 @@ extension FilesDB {
                 let thumbnailPath: URL? = URL(string: thumbnailPathString)
                 
                 // Create the File element.
-                let file = File(name: name, type: type, originalPath: originalPath, thumbnailPath: thumbnailPath)
-                
-                // Append the new File to the files array of the PhotosDB.
-                self.files.append(file)
+                responseFile = File(id: Int(id), name: name, type: type, originalPath: originalPath, thumbnailPath: thumbnailPath)
             }
         } else {
             let errorMessage = String(cString: sqlite3_errmsg(db))
             print("Query is not prepared: \(errorMessage)")
         }
         
-        //
-        self.filteredFiles = self.files
-        
-        //
-        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+        return responseFile
     }
     
 }
