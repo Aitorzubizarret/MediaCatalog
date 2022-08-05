@@ -25,6 +25,13 @@ final class FilesDB {
     var selectedCatalogFolder: String = ""
     var dbFilePath: URL?
     
+    /// SQL queries.
+    private enum SQL_QUERY: String {
+        case FILES_COUNT = "SELECT COUNT (*) FROM Files;"
+        case FILES_SELECT_WHERE_ID = "SELECT * from Files WHERE Id = "
+        case FILES_INSERT_INTO = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
+    }
+    
     public var getFilesInsideFolders: Bool = true
     
     private var RAWPhotos: Int = 0
@@ -490,7 +497,7 @@ extension FilesDB {
         guard let safeDB = db else { return }
 
         var insertStatement: OpaquePointer?
-        let insertStatementString = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
+        let insertStatementString = SQL_QUERY.FILES_INSERT_INTO.rawValue
 
         if sqlite3_prepare_v2(safeDB, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
             // Get values.
@@ -524,7 +531,7 @@ extension FilesDB {
     ///
     func getAmountOfFiles() {
         var queryStatement: OpaquePointer?
-        let queryStatementString = "SELECT COUNT (*) FROM Files;"
+        let queryStatementString = SQL_QUERY.FILES_COUNT.rawValue
         
         if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
             if sqlite3_step(queryStatement) == SQLITE_ROW {
@@ -600,7 +607,7 @@ extension FilesDB {
         var responseFile: File?
         
         var queryStatement: OpaquePointer?
-        let queryStatementString = "SELECT * from Files WHERE Id = \(realId) ;"
+        let queryStatementString = SQL_QUERY.FILES_SELECT_WHERE_ID.rawValue + "\(realId) ;"
         
         if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
             if sqlite3_step(queryStatement) == SQLITE_ROW {
