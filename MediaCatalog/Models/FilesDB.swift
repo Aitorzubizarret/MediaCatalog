@@ -375,6 +375,35 @@ final class FilesDB {
     
 }
 
+// MARK: - NSOpenPanel
+
+extension FilesDB {
+    
+    ///
+    /// Import files from the folder selected by the user.
+    ///
+    func importFilesFromFolder(window: NSWindow?) {
+        guard let window = window else { return }
+        
+        // File Manager.
+        let openPanel = NSOpenPanel()
+        openPanel.canChooseFiles = false
+        openPanel.canChooseDirectories = true
+        openPanel.allowsMultipleSelection = false
+        
+        openPanel.beginSheetModal(for: window) { result in
+            if result == NSApplication.ModalResponse.OK {
+                if let safeUrl = openPanel.urls.first {
+                    self.saveURLFromOpenPanel(url: safeUrl)
+                    
+                    self.selectedPath = safeUrl
+                }
+            }
+        }
+    }
+    
+}
+
 // MARK: - SQLite
 
 extension FilesDB {
@@ -442,6 +471,10 @@ extension FilesDB {
         openPanel.beginSheetModal(for: safeWindow) { result in
             if result == NSApplication.ModalResponse.OK {
                 if let safePath: URL = openPanel.urls.first {
+                    // Save
+                    //self.saveURLFromOpenPanel(url: safePath)
+                    
+                    
                     self.selectedCatalogFolder = safePath.path
                     let filePath: String = safePath.path + "/" + "\(self.dbFileName)"
                     
@@ -453,6 +486,10 @@ extension FilesDB {
                         print("Success: Catalog file found.")
                         if sqlite3_open(filePath, &self.db) == SQLITE_OK {
                             print("Successfully opened connection to database")
+                            
+                            self.getURLFromOpenPanel()
+                            
+                            self.selectAllFilesFromDB()
                         } else {
                             print("Unable to open database.")
                         }
@@ -500,7 +537,7 @@ extension FilesDB {
         var insertStatement: OpaquePointer?
         let insertStatementString = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
 
-        if sqlite3_prepare_v2(self.db, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
+        if sqlite3_prepare_v2(safeDB, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
             // Get values.
             let name: NSString = file.getName() as NSString
             let type: NSString = file.getType() as NSString
@@ -525,6 +562,106 @@ extension FilesDB {
         }
 
         sqlite3_finalize(insertStatement)
+    }
+    
+    ///
+    /// Read the SQLite.
+    ///
+    private func selectAllFilesFromDB() {
+        var queryStatement: OpaquePointer?
+        var queryStatementString = "SELECT * FROM Files;"
+        
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                // Id.
+                let id = sqlite3_column_int(queryStatement, 0)
+                
+                // Name.
+                var name: String = ""
+                if let nameUnsafe = sqlite3_column_text(queryStatement, 1) {
+                    name = String(cString: nameUnsafe)
+                }
+                
+                // Type.
+                var type: String = ""
+                if let typeUnsafe = sqlite3_column_text(queryStatement, 2) {
+                    type = String(cString: typeUnsafe)
+                }
+                
+                // Original Path.
+                var originalPathString: String = "file://"
+                if let originalpathStringUnsafe = sqlite3_column_text(queryStatement, 3) {
+                    originalPathString += String(cString: originalpathStringUnsafe)
+                    originalPathString = originalPathString.replacingOccurrences(of: " ", with: "%20")
+                }
+                let originalPath: URL = URL(string: originalPathString) ?? URL(string: "www.google.es")!
+                
+                // Thumbnail Path.
+                var thumbnailPathString: String = "file://"
+                if let thumbnailPathStringUnsafe = sqlite3_column_text(queryStatement, 4) {
+                    thumbnailPathString += String(cString: thumbnailPathStringUnsafe)
+                    thumbnailPathString = thumbnailPathString.replacingOccurrences(of: " ", with: "%20")
+                }
+                let thumbnailPath: URL? = URL(string: thumbnailPathString)
+                
+                // Create the File element.
+                let file = File(name: name, type: type, originalPath: originalPath, thumbnailPath: thumbnailPath)
+                
+                // Append the new File to the files array of the PhotosDB.
+                self.files.append(file)
+            }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("Query is not prepared: \(errorMessage)")
+        }
+        
+        //
+        self.filteredFiles = self.files
+        
+        //
+        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+    }
+    
+}
+
+// MARK: - UserDefaults
+
+extension FilesDB {
+    
+    ///
+    /// Save the selected URL in UserDefaults.
+    ///
+    private func saveURLFromOpenPanel(url: URL) {
+        do {
+            let pathData = try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+            UserDefaults.standard.set(pathData, forKey: "FolderPermission")
+            guard url.startAccessingSecurityScopedResource() else {
+                fatalError("Failed starting to access security scoped resource for : \(url.path)")
+            }
+            print("Security Scope Resource - Save URL in UserDefaults : \(url)")
+        } catch let error {
+            print("Error getting bookmarkData from SafePath \(error)")
+        }
+    }
+    
+    ///
+    /// Get the saved URL in UserDefaults.
+    ///
+    private func getURLFromOpenPanel() {
+        guard let pathData = UserDefaults.standard.data(forKey: "FolderPermission") else { return }
+        
+        var isStale = false
+        do {
+            let savedURL = try URL(resolvingBookmarkData: pathData,
+                                   options: .withSecurityScope,
+                                   relativeTo: nil,
+                                   bookmarkDataIsStale: &isStale)
+            
+            guard savedURL.startAccessingSecurityScopedResource() else { return }
+            print("Security Scope Resource - Get URL from UserDefaults : \(savedURL)")
+        } catch let error {
+            print("Error \(error)")
+        }
     }
     
 }

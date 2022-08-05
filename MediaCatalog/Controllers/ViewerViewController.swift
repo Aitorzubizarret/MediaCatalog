@@ -246,29 +246,7 @@ class ViewerViewController: NSViewController {
     /// Load in the CollectionView the images that the user has selected.
     ///
     private func loadImages() {
-        guard let window = self.view.window else { return }
-
-        // File Manager.
-        let fileManagerPanel = NSOpenPanel()
-        fileManagerPanel.canChooseFiles = false
-        fileManagerPanel.canChooseDirectories = true
-        fileManagerPanel.allowsMultipleSelection = false
-        
-        fileManagerPanel.beginSheetModal(for: window) { result in
-            self.photoOnDisplay = false
-            self.importedFilesTypesLabel.stringValue = "importing..."
-            
-            self.showFileInFinderButton.isHidden = false
-            
-            if result == NSApplication.ModalResponse.OK {
-                FilesDB.shared.selectedPath = fileManagerPanel.urls[0]
-                
-                self.displayAllFilesButton.contentTintColor = NSColor.black
-                self.displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
-                self.displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
-                self.displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
-            }
-        }
+        FilesDB.shared.importFilesFromFolder(window: self.view.window)
     }
     
     ///
@@ -299,6 +277,15 @@ class ViewerViewController: NSViewController {
             finalText += "\(FilesDB.shared.count(extensionType: .WEBPPhoto)) WEBP"
             
             self.importedFilesTypesLabel.stringValue = finalText
+            
+            self.photoOnDisplay = false
+            self.showFileInFinderButton.isHidden = false
+            
+            // Buttons.
+            self.displayAllFilesButton.contentTintColor = NSColor.black
+            self.displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            self.displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
+            self.displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
         }
     }
     
