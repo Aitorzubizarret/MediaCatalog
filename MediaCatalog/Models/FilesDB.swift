@@ -27,41 +27,50 @@ final class FilesDB {
     
     /// SQL queries.
     struct SQL_QUERY {
+        let FILES_CREATE = """
+        CREATE TABLE IF NOT EXISTS Files (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Name TEXT,
+            Type TEXT,
+            OriginalPath TEXT,
+            ThumbnailPath TEXT
+        );
+        """
         let FILES_COUNT = "SELECT COUNT (*) FROM Files;"
         let FILES_SELECT_WHERE_ID = "SELECT * FROM Files WHERE Id = "
         let FILES_SELECT_WHERE_TYPE_ALL = "SELECT * FROM Files"
         let FILES_SELECT_WHERE_TYPE_PHOTO = """
         SELECT * FROM Files WHERE
-        Type = 'arw' OR
-        Type = 'nef' OR
-        Type = 'cr2' OR
-        Type = 'heic' OR
-        Type = 'jpg' OR
-        Type = 'jpeg' OR
-        Type = 'png' OR
-        Type = 'bmp' OR
-        Type = 'webp';
+            Type = 'arw' OR
+            Type = 'nef' OR
+            Type = 'cr2' OR
+            Type = 'heic' OR
+            Type = 'jpg' OR
+            Type = 'jpeg' OR
+            Type = 'png' OR
+            Type = 'bmp' OR
+            Type = 'webp';
         """
         let FILES_SELECT_WHERE_TYPE_VIDEO = """
         SELECT * FROM Files WHERE
-        Type = 'mp4' OR
-        Type = 'mov' OR
-        Type = 'gif';
+            Type = 'mp4' OR
+            Type = 'mov' OR
+            Type = 'gif';
         """
         let FILES_SELECT_WHERE_TYPE_OTHERS = """
         SELECT * FROM Files WHERE
-        Type != 'arw' AND
-        Type != 'nef' AND
-        Type != 'cr2' AND
-        Type != 'heic' AND
-        Type != 'jpg' AND
-        Type != 'jpeg' AND
-        Type != 'png' AND
-        Type != 'bmp' AND
-        Type != 'webp' AND
-        Type != 'mp4' AND
-        Type != 'mov' AND
-        Type != 'gif';
+            Type != 'arw' AND
+            Type != 'nef' AND
+            Type != 'cr2' AND
+            Type != 'heic' AND
+            Type != 'jpg' AND
+            Type != 'jpeg' AND
+            Type != 'png' AND
+            Type != 'bmp' AND
+            Type != 'webp' AND
+            Type != 'mp4' AND
+            Type != 'mov' AND
+            Type != 'gif';
         """
         let FILES_INSERT_INTO = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
     }
@@ -307,53 +316,6 @@ final class FilesDB {
 //        return imageConverted
 //    }
     
-    ///
-    /// Filters the files by an extension group.
-    ///
-//    public func filterFilesBy(_ group: FileExtensionGroup) {
-//        filteredFiles = []
-//        
-//        switch group {
-//        case .all:
-//            filteredFiles = files
-//        case .photos:
-//            filteredFiles = files.filter( {
-//                $0.getType().contains("arw") ||
-//                $0.getType().contains("nef") ||
-//                $0.getType().contains("cr2") ||
-//                $0.getType().contains("heic") ||
-//                $0.getType().contains("jpg") ||
-//                $0.getType().contains("jpeg") ||
-//                $0.getType().contains("png") ||
-//                $0.getType().contains("bmp") ||
-//                $0.getType().contains("webp")
-//            } )
-//        case .videos:
-//            filteredFiles = files.filter( {
-//                $0.getType().contains("mp4") ||
-//                $0.getType().contains("mov") ||
-//                $0.getType().contains("gif")
-//            } )
-//        case .others:
-//            filteredFiles = files.filter( {
-//                !$0.getType().contains("arw") &&
-//                !$0.getType().contains("nef") &&
-//                !$0.getType().contains("cr2") &&
-//                !$0.getType().contains("heic") &&
-//                !$0.getType().contains("jpg") &&
-//                !$0.getType().contains("jpeg") &&
-//                !$0.getType().contains("png") &&
-//                !$0.getType().contains("bmp") &&
-//                !$0.getType().contains("webp") &&
-//                !$0.getType().contains("mp4") &&
-//                !$0.getType().contains("mov") &&
-//                !$0.getType().contains("gif")
-//            } )
-//        }
-//        
-//        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
-//    }
-    
 }
 
 // MARK: - NSOpenPanel
@@ -462,10 +424,6 @@ extension FilesDB {
         openPanel.beginSheetModal(for: safeWindow) { result in
             if result == NSApplication.ModalResponse.OK {
                 if let safePath: URL = openPanel.urls.first {
-                    // Save
-                    //self.saveURLFromOpenPanel(url: safePath)
-                    
-                    
                     self.selectedCatalogFolder = safePath.path
                     let filePath: String = safePath.path + "/" + "\(self.dbFileName)"
                     
@@ -503,15 +461,7 @@ extension FilesDB {
             return
         }
         
-        let createFilesTableQuery = """
-        CREATE TABLE IF NOT EXISTS Files (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            Name TEXT,
-            Type TEXT,
-            OriginalPath TEXT,
-            ThumbnailPath TEXT
-        )
-        """
+        let createFilesTableQuery = SQL_QUERY().FILES_CREATE
         
         if sqlite3_exec(db, createFilesTableQuery, nil, nil, nil) != SQLITE_OK {
             let errmsg = String(cString: sqlite3_errmsg(db)!)
@@ -520,7 +470,7 @@ extension FilesDB {
     }
     
     ///
-    ///
+    /// Save File info in SQLite DB.
     ///
     private func saveFileInDB(file: File) {
         guard let safeDB = db else { return }
@@ -585,7 +535,7 @@ extension FilesDB {
                 var originalPathString: String = "file://"
                 if let originalpathStringUnsafe = sqlite3_column_text(queryStatement, 3) {
                     originalPathString += String(cString: originalpathStringUnsafe)
-                    originalPathString = originalPathString.replacingOccurrences(of: " ", with: "%20")
+                    originalPathString = cleanFilePath(dirtyPath: originalPathString)
                 }
                 let originalPath: URL = URL(string: originalPathString) ?? URL(string: "www.google.es")!
                 
@@ -593,7 +543,7 @@ extension FilesDB {
                 var thumbnailPathString: String = "file://"
                 if let thumbnailPathStringUnsafe = sqlite3_column_text(queryStatement, 4) {
                     thumbnailPathString += String(cString: thumbnailPathStringUnsafe)
-                    thumbnailPathString = thumbnailPathString.replacingOccurrences(of: " ", with: "%20")
+                    thumbnailPathString = cleanFilePath(dirtyPath: thumbnailPathString)
                 }
                 let thumbnailPath: URL? = URL(string: thumbnailPathString)
                 
@@ -631,6 +581,20 @@ extension FilesDB {
         
         // Notify to refresh the CollectionView.
         NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+    }
+    
+}
+
+// MARK: - URL
+
+extension FilesDB {
+    
+    private func cleanFilePath(dirtyPath: String) -> String {
+        var filePath: String = dirtyPath
+        
+        filePath = filePath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
+        return filePath
     }
     
 }
