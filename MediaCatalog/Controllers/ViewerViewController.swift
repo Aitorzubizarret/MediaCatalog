@@ -86,6 +86,7 @@ class ViewerViewController: NSViewController {
     
     // MARK: - Properties
     
+    private var previouslySelectedPhotoIndex: IndexPath?
     private var selectedPhotoIndex: IndexPath?
     
     private var photoOnDisplay: Bool = false {
@@ -257,7 +258,7 @@ class ViewerViewController: NSViewController {
             self.galleryCollectionView.reloadData()
             
             // If there are files, scroll to the top of the Collection View.
-            if FilesDB.shared.amountOfFiles > 0 {
+            if FilesDB.shared.filesId.count > 0 {
                 self.galleryCollectionView.scrollToItems(at: [IndexPath(item: 0, section: 0)], scrollPosition: .top)
             }
             
@@ -288,7 +289,7 @@ class ViewerViewController: NSViewController {
     ///
     private func showSelectedFileInFinder() {
         if let safeSelectedPhotoIndex = selectedPhotoIndex,
-           let safeFile = FilesDB.shared.getFile(id: safeSelectedPhotoIndex.item) {
+           let safeFile = FilesDB.shared.getFile(id: FilesDB.shared.filesId[safeSelectedPhotoIndex.item]) {
             
             NSWorkspace.shared.activateFileViewerSelecting([safeFile.getOriginalPath()])
         }
@@ -302,28 +303,28 @@ class ViewerViewController: NSViewController {
         
         switch extensionGroup {
         case .all:
-            //FilesDB.shared.filterFilesBy(.all)
+            FilesDB.shared.getFilesIdWhere(sql_query: FilesDB.SQL_QUERY().FILES_SELECT_WHERE_TYPE_ALL)
             
             displayAllFilesButton.contentTintColor = NSColor.black
             displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
         case .photos:
-            //FilesDB.shared.filterFilesBy(.photos)
+            FilesDB.shared.getFilesIdWhere(sql_query: FilesDB.SQL_QUERY().FILES_SELECT_WHERE_TYPE_PHOTO)
             
             displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayOnlyPhotosButton.contentTintColor = NSColor.black
             displayOnlyVideosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
         case .videos:
-            //FilesDB.shared.filterFilesBy(.videos)
+            FilesDB.shared.getFilesIdWhere(sql_query: FilesDB.SQL_QUERY().FILES_SELECT_WHERE_TYPE_VIDEO)
             
             displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayOnlyVideosButton.contentTintColor = NSColor.black
             displayRestOfFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
         case .others:
-            //FilesDB.shared.filterFilesBy(.others)
+            FilesDB.shared.getFilesIdWhere(sql_query: FilesDB.SQL_QUERY().FILES_SELECT_WHERE_TYPE_OTHERS)
             
             displayAllFilesButton.contentTintColor = NSColor.MediaCatalog.darkGrey
             displayOnlyPhotosButton.contentTintColor = NSColor.MediaCatalog.darkGrey
@@ -341,10 +342,12 @@ extension ViewerViewController: NSCollectionViewDelegate {
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
         guard let safeIndexPath = indexPaths.first else { return }
         
+        previouslySelectedPhotoIndex = selectedPhotoIndex
         selectedPhotoIndex = safeIndexPath
         
         if collectionView == thumbnailsCollectionView {
-            updateThumbnailsCollectionViewPhoto(file: FilesDB.shared.getFile(id: safeIndexPath.item))
+            let fileId = FilesDB.shared.filesId[safeIndexPath.item]
+            updateThumbnailsCollectionViewPhoto(file: FilesDB.shared.getFile(id: fileId))
         }
     }
     
@@ -359,7 +362,7 @@ extension ViewerViewController: NSCollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        return FilesDB.shared.amountOfFiles
+        return FilesDB.shared.filesId.count
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
@@ -373,11 +376,12 @@ extension ViewerViewController: NSCollectionViewDataSource {
                     item.isSelected = false
                 }
             }
-            item.fileIndexPath = indexPath
+            item.fileId = FilesDB.shared.filesId[indexPath.item]
+            item.indexPath = indexPath
             return item
         } else {
             let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ThumbnailItems"), for: indexPath) as! ThumbnailCollectionViewItem
-            item.file = FilesDB.shared.getFile(id: indexPath.item)
+            item.fileId = FilesDB.shared.filesId[indexPath.item]
             if let safeSelectedPhotoIndex = selectedPhotoIndex {
                 if safeSelectedPhotoIndex.item == indexPath.item {
                     item.photoSelected = true
@@ -424,6 +428,7 @@ extension ViewerViewController {
     
     private func updateThumbnailsCollectionViewPhoto(file: File?) {
         guard let safeFile = file,
+              let safePreviouslySelectedPhotoIndex = previouslySelectedPhotoIndex,
               let safeSelectedPhotoIndex = selectedPhotoIndex else { return }
         
         // CAShapeLayers
@@ -445,7 +450,7 @@ extension ViewerViewController {
             imageView.image = NSImage(named: "unknownFileExtension")
         }
         
-        //thumbnailsCollectionView.reloadItems(at: [safePreviouslySelectedPhotoIndex, safeSelectedPhotoIndex])
+        thumbnailsCollectionView.reloadItems(at: [safePreviouslySelectedPhotoIndex, safeSelectedPhotoIndex])
     }
     
 }
@@ -454,8 +459,8 @@ extension ViewerViewController {
 
 extension ViewerViewController: FileItemActions {
     
-    func selectFile(fileIndexPath: IndexPath?) {
-        guard let safeFileIndexPath = fileIndexPath else { return }
+    func selectFile(indexPath: IndexPath?) {
+        guard let safeFileIndexPath = indexPath else { return }
         
         if let safeSelectedPhotoIndex = selectedPhotoIndex {
             if safeSelectedPhotoIndex == safeFileIndexPath {
@@ -472,10 +477,10 @@ extension ViewerViewController: FileItemActions {
         }
     }
     
-    func openFile(fileIndexPath: IndexPath?) {
-        guard let safeFileIndexPath = fileIndexPath else { return }
+    func openFile(id: Int?) {
+        guard let safeFileId = id else { return }
         
-        displaySelectedPhoto(file: FilesDB.shared.getFile(id: safeFileIndexPath.item))
+        displaySelectedPhoto(file: FilesDB.shared.getFile(id: safeFileId))
     }
     
 }

@@ -16,7 +16,7 @@ final class FilesDB {
     static var shared = FilesDB() // Singleton.
     
     /// Data
-    var amountOfFiles: Int = 0
+    var filesId: [Int] = []
     
     /// SQLite
     var db: OpaquePointer?
@@ -26,10 +26,44 @@ final class FilesDB {
     var dbFilePath: URL?
     
     /// SQL queries.
-    private enum SQL_QUERY: String {
-        case FILES_COUNT = "SELECT COUNT (*) FROM Files;"
-        case FILES_SELECT_WHERE_ID = "SELECT * from Files WHERE Id = "
-        case FILES_INSERT_INTO = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
+    struct SQL_QUERY {
+        let FILES_COUNT = "SELECT COUNT (*) FROM Files;"
+        let FILES_SELECT_WHERE_ID = "SELECT * FROM Files WHERE Id = "
+        let FILES_SELECT_WHERE_TYPE_ALL = "SELECT * FROM Files"
+        let FILES_SELECT_WHERE_TYPE_PHOTO = """
+        SELECT * FROM Files WHERE
+        Type = 'arw' OR
+        Type = 'nef' OR
+        Type = 'cr2' OR
+        Type = 'heic' OR
+        Type = 'jpg' OR
+        Type = 'jpeg' OR
+        Type = 'png' OR
+        Type = 'bmp' OR
+        Type = 'webp';
+        """
+        let FILES_SELECT_WHERE_TYPE_VIDEO = """
+        SELECT * FROM Files WHERE
+        Type = 'mp4' OR
+        Type = 'mov' OR
+        Type = 'gif';
+        """
+        let FILES_SELECT_WHERE_TYPE_OTHERS = """
+        SELECT * FROM Files WHERE
+        Type != 'arw' AND
+        Type != 'nef' AND
+        Type != 'cr2' AND
+        Type != 'heic' AND
+        Type != 'jpg' AND
+        Type != 'jpeg' AND
+        Type != 'png' AND
+        Type != 'bmp' AND
+        Type != 'webp' AND
+        Type != 'mp4' AND
+        Type != 'mov' AND
+        Type != 'gif';
+        """
+        let FILES_INSERT_INTO = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
     }
     
     public var getFilesInsideFolders: Bool = true
@@ -128,9 +162,7 @@ final class FilesDB {
                 self.saveFileInDB(file: file)
             }
             
-            self.getAmountOfFiles()
-            
-            NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+            self.getFilesIdWhere(sql_query: SQL_QUERY().FILES_SELECT_WHERE_TYPE_ALL)
         }
     }
     
@@ -448,10 +480,7 @@ extension FilesDB {
                             
                             self.getURLFromOpenPanel()
                             
-                            self.getAmountOfFiles()
-                            
-                            // Notify to refresh the CollectionView.
-                            NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
+                            self.getFilesIdWhere(sql_query: SQL_QUERY().FILES_SELECT_WHERE_TYPE_ALL)
                         } else {
                             print("Unable to open database.")
                         }
@@ -497,7 +526,7 @@ extension FilesDB {
         guard let safeDB = db else { return }
 
         var insertStatement: OpaquePointer?
-        let insertStatementString = SQL_QUERY.FILES_INSERT_INTO.rawValue
+        let insertStatementString: String = SQL_QUERY().FILES_INSERT_INTO
 
         if sqlite3_prepare_v2(safeDB, insertStatementString, -1, &insertStatement, nil) == SQLITE_OK {
             // Get values.
@@ -527,87 +556,13 @@ extension FilesDB {
     }
     
     ///
-    /// Gets how many files the DB has.
-    ///
-    func getAmountOfFiles() {
-        var queryStatement: OpaquePointer?
-        let queryStatementString = SQL_QUERY.FILES_COUNT.rawValue
-        
-        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
-            if sqlite3_step(queryStatement) == SQLITE_ROW {
-                let rowAmount: Int32 = sqlite3_column_int(queryStatement, 0)
-                self.amountOfFiles = Int(rowAmount)
-            }
-        } else {
-            let errorMessage = String(cString: sqlite3_errmsg(db))
-            print("Query is not prepared: \(errorMessage)")
-        }
-    }
-    
-    ///
-    /// Read the SQLite.
-    ///
-//    private func selectAllFilesFromDB() {
-//        var queryStatement: OpaquePointer?
-//        let queryStatementString = "SELECT * FROM Files;"
-//
-//        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
-//            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
-//                // Id.
-//                let id = sqlite3_column_int(queryStatement, 0)
-//
-//                // Name.
-//                var name: String = ""
-//                if let nameUnsafe = sqlite3_column_text(queryStatement, 1) {
-//                    name = String(cString: nameUnsafe)
-//                }
-//
-//                // Type.
-//                var type: String = ""
-//                if let typeUnsafe = sqlite3_column_text(queryStatement, 2) {
-//                    type = String(cString: typeUnsafe)
-//                }
-//
-//                // Original Path.
-//                var originalPathString: String = "file://"
-//                if let originalpathStringUnsafe = sqlite3_column_text(queryStatement, 3) {
-//                    originalPathString += String(cString: originalpathStringUnsafe)
-//                    originalPathString = originalPathString.replacingOccurrences(of: " ", with: "%20")
-//                }
-//                let originalPath: URL = URL(string: originalPathString) ?? URL(string: "www.google.es")!
-//
-//                // Thumbnail Path.
-//                var thumbnailPathString: String = "file://"
-//                if let thumbnailPathStringUnsafe = sqlite3_column_text(queryStatement, 4) {
-//                    thumbnailPathString += String(cString: thumbnailPathStringUnsafe)
-//                    thumbnailPathString = thumbnailPathString.replacingOccurrences(of: " ", with: "%20")
-//                }
-//                let thumbnailPath: URL? = URL(string: thumbnailPathString)
-//
-//                // Create the File element.
-//                let file = File(id: Int(id), name: name, type: type, originalPath: originalPath, thumbnailPath: thumbnailPath)
-//            }
-//        } else {
-//            let errorMessage = String(cString: sqlite3_errmsg(db))
-//            print("Query is not prepared: \(errorMessage)")
-//        }
-//
-//        // Notify to refresh the CollectionView.
-//        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
-//    }
-    
-    ///
     /// Gets the file with the id
     ///
     func getFile(id: Int) -> File? {
-        
-        /// The Id received is always from IndexPath.item (CollectionView), and because SQLite DB starts from 1 instead of 0, we're adding 1.
-        let realId = id + 1
-        
         var responseFile: File?
         
         var queryStatement: OpaquePointer?
-        let queryStatementString = SQL_QUERY.FILES_SELECT_WHERE_ID.rawValue + "\(realId) ;"
+        let queryStatementString = SQL_QUERY().FILES_SELECT_WHERE_ID + "\(id) ;"
         
         if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
             if sqlite3_step(queryStatement) == SQLITE_ROW {
@@ -651,6 +606,31 @@ extension FilesDB {
         }
         
         return responseFile
+    }
+    
+    ///
+    /// Gets Files filtered.
+    ///
+    func getFilesIdWhere(sql_query: String) {
+        var queryStatement: OpaquePointer?
+        let queryStatementString = sql_query
+        
+        if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+            self.filesId = []
+            
+            while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                // Id.
+                let id: Int32 = sqlite3_column_int(queryStatement, 0)
+                
+                self.filesId.append(Int(id))
+            }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("Query is not prepared: \(errorMessage)")
+        }
+        
+        // Notify to refresh the CollectionView.
+        NotificationCenter.default.post(name: Notification.Name("PhotosDB-Populated"), object: nil)
     }
     
 }

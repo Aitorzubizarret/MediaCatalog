@@ -8,8 +8,8 @@
 import Cocoa
 
 protocol FileItemActions {
-    func selectFile(fileIndexPath: IndexPath?)
-    func openFile(fileIndexPath: IndexPath?)
+    func selectFile(indexPath: IndexPath?)
+    func openFile(id: Int?)
 }
 
 class FileCollectionViewItem: NSCollectionViewItem {
@@ -22,10 +22,10 @@ class FileCollectionViewItem: NSCollectionViewItem {
     // MARK: Properties
     
     public var delegate: FileItemActions?
-    public var fileIndexPath: IndexPath? {
+    public var fileId: Int? {
         didSet {
-            guard let safeFileIndexPath = fileIndexPath,
-                  let file = FilesDB.shared.getFile(id: safeFileIndexPath.item) else { return }
+            guard let safeFileId = fileId,
+                  let file = FilesDB.shared.getFile(id: safeFileId) else { return }
             
             // File name.
             nameLabel.stringValue = file.getName()
@@ -47,13 +47,13 @@ class FileCollectionViewItem: NSCollectionViewItem {
             }
         }
     }
+    public var indexPath: IndexPath?
     
     // MARK: - Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //self.view = NSView()
         self.view.wantsLayer = true
     }
     
@@ -61,11 +61,11 @@ class FileCollectionViewItem: NSCollectionViewItem {
         switch event.clickCount {
         case 1:
             if let safeDelegate = delegate {
-                safeDelegate.selectFile(fileIndexPath: fileIndexPath)
+                safeDelegate.selectFile(indexPath: indexPath)
             }
         case 2:
             if let safeDelegate = delegate {
-                safeDelegate.openFile(fileIndexPath: fileIndexPath)
+                safeDelegate.openFile(id: fileId)
             }
         default:
             print("Aitor mouseUp")
