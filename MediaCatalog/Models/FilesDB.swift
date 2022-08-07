@@ -32,6 +32,7 @@ final class FilesDB {
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Name TEXT,
             Type TEXT,
+            CreationDate TEXT,
             OriginalPath TEXT,
             ThumbnailPath TEXT
         );
@@ -72,7 +73,7 @@ final class FilesDB {
             Type != 'mov' AND
             Type != 'gif';
         """
-        let FILES_INSERT_INTO = "INSERT INTO Files(Name, Type, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?);"
+        let FILES_INSERT_INTO = "INSERT INTO Files(Name, Type, CreationDate, OriginalPath, ThumbnailPath) VALUES (?, ?, ?, ?, ?);"
     }
     
     public var getFilesInsideFolders: Bool = true
@@ -132,6 +133,9 @@ final class FilesDB {
                 // File type/extension.
                 let fileType: String = fileURL.pathExtension.lowercased()
                 
+                // File creation date.
+                let fileCreationDate: String = self.getFileCreationDate(filePath: fileURL.path)
+                
                 // Thumbnail image path (if created).
                 var thumbnailPath: URL?
                 
@@ -165,7 +169,7 @@ final class FilesDB {
                 }
                 
                 // Create the File element.
-                let file = File(id: fileId, name: fileName, type: fileType, originalPath: fileURL, thumbnailPath: thumbnailPath)
+                let file = File(id: fileId, name: fileName, type: fileType, creationDate: fileCreationDate, originalPath: fileURL, thumbnailPath: thumbnailPath)
                 
                 // Safe File object in SQLite DB.
                 self.saveFileInDB(file: file)
@@ -318,7 +322,7 @@ final class FilesDB {
     
 }
 
-// MARK: - NSOpenPanel
+// MARK: - NSOpenPanel + FileManager
 
 extension FilesDB {
     
@@ -353,6 +357,24 @@ extension FilesDB {
                 }
             }
         }
+    }
+    
+    ///
+    /// Gets the CreationDate of the File.
+    ///
+    private func getFileCreationDate(filePath: String) -> String {
+        var creationDate: String = ""
+        
+        do {
+            let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath) as [FileAttributeKey: Any]
+            let fileCreationDate = fileAttributes[FileAttributeKey.creationDate] as! Date
+            
+            creationDate = "\(fileCreationDate)"
+        } catch let error {
+            print("Error reading file creation date : \(error)")
+        }
+        
+        return creationDate
     }
     
 }
@@ -482,6 +504,7 @@ extension FilesDB {
             // Get values.
             let name: NSString = file.getName() as NSString
             let type: NSString = file.getType() as NSString
+            let creationDate: NSString = file.getCreationDate() as NSString
             let originalPath: NSString = file.getOriginalPath().path as NSString
             var thumbnailPath: NSString = ""
             if let safeThumbnailPathURL: URL = file.getThumbnailImagePath() {
@@ -490,8 +513,9 @@ extension FilesDB {
             
             sqlite3_bind_text(insertStatement, 1, name.utf8String, -1, nil)
             sqlite3_bind_text(insertStatement, 2, type.utf8String, -1, nil)
-            sqlite3_bind_text(insertStatement, 3, originalPath.utf8String, -1, nil)
-            sqlite3_bind_text(insertStatement, 4, thumbnailPath.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 3, creationDate.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 4, originalPath.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 5, thumbnailPath.utf8String, -1, nil)
 
             if sqlite3_step(insertStatement) == SQLITE_DONE {
                 print("Successfully inserted")
@@ -531,9 +555,15 @@ extension FilesDB {
                     type = String(cString: typeUnsafe)
                 }
                 
+                // Creation date.
+                var creationDate: String = ""
+                if let creationDateUnsafe = sqlite3_column_text(queryStatement, 3) {
+                    creationDate = String(cString: creationDateUnsafe)
+                }
+                
                 // Original Path.
                 var originalPathString: String = "file://"
-                if let originalpathStringUnsafe = sqlite3_column_text(queryStatement, 3) {
+                if let originalpathStringUnsafe = sqlite3_column_text(queryStatement, 4) {
                     originalPathString += String(cString: originalpathStringUnsafe)
                     originalPathString = cleanFilePath(dirtyPath: originalPathString)
                 }
@@ -541,14 +571,14 @@ extension FilesDB {
                 
                 // Thumbnail Path.
                 var thumbnailPathString: String = "file://"
-                if let thumbnailPathStringUnsafe = sqlite3_column_text(queryStatement, 4) {
+                if let thumbnailPathStringUnsafe = sqlite3_column_text(queryStatement, 5) {
                     thumbnailPathString += String(cString: thumbnailPathStringUnsafe)
                     thumbnailPathString = cleanFilePath(dirtyPath: thumbnailPathString)
                 }
                 let thumbnailPath: URL? = URL(string: thumbnailPathString)
                 
                 // Create the File element.
-                responseFile = File(id: Int(id), name: name, type: type, originalPath: originalPath, thumbnailPath: thumbnailPath)
+                responseFile = File(id: Int(id), name: name, type: type, creationDate: creationDate, originalPath: originalPath, thumbnailPath: thumbnailPath)
             }
         } else {
             let errorMessage = String(cString: sqlite3_errmsg(db))
