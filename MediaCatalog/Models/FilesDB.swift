@@ -327,63 +327,6 @@ final class FilesDB {
 extension FilesDB {
     
     ///
-    /// Import files from the folder selected by the user.
-    ///
-    func importFilesFromFolder(window: NSWindow?) {
-        guard let window = window else { return }
-        
-        // File Manager.
-        let openPanel = NSOpenPanel()
-        openPanel.canChooseFiles = false
-        openPanel.canChooseDirectories = true
-        openPanel.allowsMultipleSelection = false
-        
-        openPanel.beginSheetModal(for: window) { result in
-            if result == NSApplication.ModalResponse.OK {
-                if let safeUrl = openPanel.urls.first {
-                    self.saveURLFromOpenPanel(url: safeUrl)
-                    
-                    self.RAWPhotos = 0
-                    self.HEICPhotos = 0
-                    self.JPEGPhotos = 0
-                    self.PNGPhotos = 0
-                    self.GIFPhotos = 0
-                    self.BMPPhotos = 0
-                    self.WEBPPhotos = 0
-                    
-                    let selectedFilesURLs: [URL] = self.contentsOf(folder: safeUrl)
-                    
-                    self.populateDB(filesURLs: selectedFilesURLs)
-                }
-            }
-        }
-    }
-    
-    ///
-    /// Gets the CreationDate of the File.
-    ///
-    private func getFileCreationDate(filePath: String) -> String {
-        var creationDate: String = ""
-        
-        do {
-            let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath) as [FileAttributeKey: Any]
-            let fileCreationDate = fileAttributes[FileAttributeKey.creationDate] as! Date
-            
-            creationDate = "\(fileCreationDate)"
-        } catch let error {
-            print("Error reading file creation date : \(error)")
-        }
-        
-        return creationDate
-    }
-    
-}
-
-// MARK: - SQLite
-
-extension FilesDB {
-    
-    ///
     /// Creates a Catalog (SQLite) file.
     ///
     func createCatalogFile(window: NSWindow?) {
@@ -471,9 +414,66 @@ extension FilesDB {
     }
     
     ///
+    /// Import files from the folder selected by the user.
+    ///
+    func importFilesFromFolder(window: NSWindow?) {
+        guard let window = window else { return }
+        
+        // File Manager.
+        let openPanel = NSOpenPanel()
+        openPanel.canChooseFiles = false
+        openPanel.canChooseDirectories = true
+        openPanel.allowsMultipleSelection = false
+        
+        openPanel.beginSheetModal(for: window) { result in
+            if result == NSApplication.ModalResponse.OK {
+                if let safeUrl = openPanel.urls.first {
+                    self.saveURLFromOpenPanel(url: safeUrl)
+                    
+                    self.RAWPhotos = 0
+                    self.HEICPhotos = 0
+                    self.JPEGPhotos = 0
+                    self.PNGPhotos = 0
+                    self.GIFPhotos = 0
+                    self.BMPPhotos = 0
+                    self.WEBPPhotos = 0
+                    
+                    let selectedFilesURLs: [URL] = self.contentsOf(folder: safeUrl)
+                    
+                    self.populateDB(filesURLs: selectedFilesURLs)
+                }
+            }
+        }
+    }
+    
+    ///
+    /// Gets the CreationDate of the File.
+    ///
+    private func getFileCreationDate(filePath: String) -> String {
+        var creationDate: String = ""
+        
+        do {
+            let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath) as [FileAttributeKey: Any]
+            let fileCreationDate = fileAttributes[FileAttributeKey.creationDate] as! Date
+            
+            creationDate = "\(fileCreationDate)"
+        } catch let error {
+            print("Error reading file creation date : \(error)")
+        }
+        
+        return creationDate
+    }
+    
+}
+
+// MARK: - SQLite
+
+extension FilesDB {
+    
+    ///
     /// Create the Catalog SQLite DB Structure.
     ///
-    func createCatalogStructure(filePath: String) {
+    private func createCatalogStructure(filePath: String) {
         if sqlite3_open(filePath, &db) == SQLITE_OK {
             print("Catalog SQLITE open")
         } else {
@@ -517,9 +517,7 @@ extension FilesDB {
             sqlite3_bind_text(insertStatement, 4, originalPath.utf8String, -1, nil)
             sqlite3_bind_text(insertStatement, 5, thumbnailPath.utf8String, -1, nil)
 
-            if sqlite3_step(insertStatement) == SQLITE_DONE {
-                print("Successfully inserted")
-            } else {
+            if sqlite3_step(insertStatement) != SQLITE_DONE {
                 print("Error inserting")
             }
         } else {
@@ -619,6 +617,9 @@ extension FilesDB {
 
 extension FilesDB {
     
+    ///
+    ///  Cleans the File path URL to avoid problems with some chars.
+    ///
     private func cleanFilePath(dirtyPath: String) -> String {
         var filePath: String = dirtyPath
         
